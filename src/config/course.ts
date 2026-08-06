@@ -35,13 +35,13 @@ export interface CourseConfig {
 }
 
 export const course: CourseConfig = {
-  id: 'react-junior',
+  id: 'react-cert',
   name: 'React Cert Quiz',
-  badge: 'Junior React Developer',
-  description: 'Repaso interactivo para la certificación Junior React Developer — flashcards con SRS, quizzes, simulacro de examen y analogías del mundo real.',
+  badge: 'React Developer (Level 1 & 2)',
+  description: 'Repaso interactivo para las certificaciones React Developer Level 1 y 2 — flashcards con SRS, quizzes, simulacro de examen y analogías del mundo real.',
   techLabel: 'En React/JS',
   exam: {
-    defaultQuestions: 40,
+    defaultQuestions: 50,
     defaultDurationMinutes: 90,
     defaultCutoff: 70,
   },
