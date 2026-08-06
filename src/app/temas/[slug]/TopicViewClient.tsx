@@ -10,9 +10,10 @@ const reviewedSchema = z.record(z.string(), z.boolean());
 
 interface TopicViewClientProps {
   topic: Topic;
+  nextTopic?: Topic;
 }
 
-export function TopicViewClient({ topic }: TopicViewClientProps) {
+export function TopicViewClient({ topic, nextTopic }: TopicViewClientProps) {
   const [reviewed, setReviewed] = usePersistentState(
     'reviewed_topics',
     {} as Record<string, boolean>,
@@ -29,6 +30,7 @@ export function TopicViewClient({ topic }: TopicViewClientProps) {
   return (
     <TopicView
       topic={topic}
+      nextTopic={nextTopic}
       isReviewed={reviewed[topic.id] ?? false}
       onMarkReviewed={handleMarkReviewed}
     />

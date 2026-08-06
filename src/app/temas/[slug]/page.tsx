@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getTopicById, getTopicIds } from '@/content/index';
+import { getTopicById, getTopicIds, getNextTopic } from '@/content/index';
 import { TopicViewClient } from './TopicViewClient';
 
 export function generateStaticParams() {
@@ -18,5 +18,7 @@ export default async function TopicPage({
     notFound();
   }
 
-  return <TopicViewClient topic={topic} />;
+  const nextTopic = getNextTopic(slug);
+
+  return <TopicViewClient topic={topic} nextTopic={nextTopic} />;
 }

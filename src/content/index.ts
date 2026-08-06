@@ -77,3 +77,12 @@ export function getTopicIds(): string[] {
 export function getTopicIdsByCourse(courseId: string): string[] {
   return topics.filter((t) => t.courseId === courseId).map((t) => t.id);
 }
+
+/** Get the next topic in the same course, or undefined if it's the last */
+export function getNextTopic(topicId: string): Topic | undefined {
+  const topic = getTopicById(topicId);
+  if (!topic) return undefined;
+  const courseTopics = getTopicsByCourse(topic.courseId);
+  const idx = courseTopics.findIndex((t) => t.id === topicId);
+  return idx >= 0 && idx < courseTopics.length - 1 ? courseTopics[idx + 1] : undefined;
+}

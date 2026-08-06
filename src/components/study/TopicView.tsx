@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode, Code2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode, Code2, Trophy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,16 +11,18 @@ import { Progress } from '@/components/ui/progress';
 import { AnalogyCard } from './AnalogyCard';
 import { CodeBlock } from './CodeBlock';
 import { CodeChallengeBlock } from './CodeChallengeBlock';
+import { springSnappy } from '@/lib/motion';
 import { es } from '@/lib/i18n/es';
 import type { Topic } from '@/content/types';
 
 interface TopicViewProps {
   topic: Topic;
+  nextTopic?: Topic;
   isReviewed?: boolean;
   onMarkReviewed?: () => void;
 }
 
-export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicViewProps) {
+export function TopicView({ topic, nextTopic, isReviewed = false, onMarkReviewed }: TopicViewProps) {
   const [readProgress, setReadProgress] = useState(0);
 
   function handleScroll(e: React.UIEvent<HTMLDivElement>) {
@@ -192,8 +195,76 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
           </section>
         )}
 
-        {/* Bottom spacer */}
-        <div className="h-8" />
+        {/* Bottom CTA — Completar y siguiente */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={springSnappy}
+          className="pt-4 pb-8"
+        >
+          <Card className={`border-2 transition-colors ${isReviewed ? 'border-green-500/40 bg-green-500/[0.03]' : 'border-primary/30 bg-primary/[0.03]'}`}>
+            <CardContent className="p-6 sm:p-8 space-y-5">
+              {/* Status message */}
+              <div className="flex items-center gap-3">
+                {isReviewed ? (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={springSnappy}
+                    className="h-10 w-10 rounded-full bg-green-500/15 flex items-center justify-center"
+                  >
+                    <Trophy className="h-5 w-5 text-green-500" />
+                  </motion.div>
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                  </div>
+                )}
+                <div>
+                  <p className="font-semibold text-base">
+                    {isReviewed ? '¡Tema completado!' : '¿Terminaste de estudiar este tema?'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {isReviewed ? 'Puedes continuar al siguiente tema o volver a la lista.' : 'Márcalo como repasado para registrar tu avance.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {!isReviewed && (
+                  <Button
+                    onClick={onMarkReviewed}
+                    size="lg"
+                    className="gap-2 flex-1 sm:flex-none"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                    Marcar como completado
+                  </Button>
+                )}
+                {nextTopic && (
+                  <Link
+                    href={`/temas/${nextTopic.id}`}
+                    className={`inline-flex items-center justify-center gap-2 rounded-md px-6 h-11 text-sm font-medium transition-colors flex-1 sm:flex-none ${isReviewed ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'}`}
+                  >
+                    <span className="truncate">Siguiente: {nextTopic.title}</span>
+                    <ArrowRight className="h-4 w-4 shrink-0" />
+                  </Link>
+                )}
+                {!nextTopic && isReviewed && (
+                  <Link
+                    href="/temas"
+                    className="inline-flex items-center justify-center gap-2 rounded-md px-6 h-11 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    Volver a temas
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
       </div>
     </div>
   );
