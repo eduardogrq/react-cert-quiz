@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { z } from 'zod/v4';
 import { course } from '@/config/course';
 
@@ -10,7 +10,7 @@ const STORAGE_PREFIX = course.storagePrefix;
  * Hook para persistir estado en localStorage con validación Zod.
  * - Prefijo versionado para migraciones seguras
  * - No rompe si localStorage está vacío o corrupto
- * - Solo ejecuta en cliente
+ * - Hidratación segura: siempre inicia con defaultValue, lee localStorage en useEffect
  */
 export function usePersistentState<T>(
   key: string,
@@ -18,22 +18,29 @@ export function usePersistentState<T>(
   schema: z.ZodType<T>
 ): [T, (value: T | ((prev: T) => T)) => void, () => void] {
   const storageKey = `${STORAGE_PREFIX}${key}`;
+  const [state, setState] = useState<T>(defaultValue);
+  const hydrated = useRef(false);
 
-  const [state, setState] = useState<T>(() => {
-    if (typeof window === 'undefined') return defaultValue;
+  // Read from localStorage after hydration (client only)
+  useEffect(() => {
     try {
       const stored = localStorage.getItem(storageKey);
-      if (stored === null) return defaultValue;
-      const parsed = JSON.parse(stored);
-      const result = schema.safeParse(parsed);
-      if (result.success) return result.data;
-      return defaultValue;
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        const result = schema.safeParse(parsed);
+        if (result.success) {
+          setState(result.data);
+        }
+      }
     } catch {
-      return defaultValue;
+      // localStorage unavailable or corrupt — keep default
     }
-  });
+    hydrated.current = true;
+  }, [storageKey, schema]);
 
+  // Persist to localStorage on state changes (skip initial hydration read)
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
     } catch {
