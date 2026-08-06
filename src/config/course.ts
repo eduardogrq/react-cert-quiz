@@ -70,6 +70,19 @@ export const appConfig: AppConfig = {
       },
       hue: 220,
     },
+    {
+      id: 'nextjs-16',
+      name: 'Next.js 16+',
+      badge: 'Next.js Developer',
+      description: 'Next.js 16+ App Router: Server Components, caché, rendering, Server Actions, routing avanzado y despliegue.',
+      techLabel: 'En Next.js',
+      exam: {
+        defaultQuestions: 50,
+        defaultDurationMinutes: 90,
+        defaultCutoff: 70,
+      },
+      hue: 160,
+    },
   ],
 };
 

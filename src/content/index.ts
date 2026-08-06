@@ -12,6 +12,19 @@ import { hooksTopic } from './topics/hooks';
 import { intermediateHooksTopic } from './topics/intermediate-hooks';
 import { reactRouterTopic } from './topics/react-router';
 import { typescriptReactTopic } from './topics/typescript-react';
+// Next.js 16+
+import { nextjsArchitectureTopic } from './topics/nextjs-architecture';
+import { nextjsRoutingTopic } from './topics/nextjs-routing';
+import { nextjsNavigationTopic } from './topics/nextjs-navigation';
+import { nextjsDataFetchingTopic } from './topics/nextjs-data-fetching';
+import { nextjsRenderingTopic } from './topics/nextjs-rendering';
+import { nextjsCacheTopic } from './topics/nextjs-cache';
+import { nextjsMutationsTopic } from './topics/nextjs-mutations';
+import { nextjsBackendTopic } from './topics/nextjs-backend';
+import { nextjsSecurityTopic } from './topics/nextjs-security';
+import { nextjsOptimizationTopic } from './topics/nextjs-optimization';
+import { nextjsDeploymentTopic } from './topics/nextjs-deployment';
+import { nextjsTestingTopic } from './topics/nextjs-testing';
 
 /** All topics across all courses */
 export const topics: Topic[] = [
@@ -30,6 +43,19 @@ export const topics: Topic[] = [
   intermediateStateTopic,
   intermediateHooksTopic,
   typescriptReactTopic,
+  // Next.js 16+
+  nextjsArchitectureTopic,
+  nextjsRoutingTopic,
+  nextjsNavigationTopic,
+  nextjsDataFetchingTopic,
+  nextjsRenderingTopic,
+  nextjsCacheTopic,
+  nextjsMutationsTopic,
+  nextjsBackendTopic,
+  nextjsSecurityTopic,
+  nextjsOptimizationTopic,
+  nextjsDeploymentTopic,
+  nextjsTestingTopic,
 ];
 
 /** Get topics filtered by courseId */
