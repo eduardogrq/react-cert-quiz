@@ -253,7 +253,7 @@ export function ExamClient({ topics }: ExamClientProps) {
 
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger render={<span />}>
                 <Button
                   variant={isFlagged ? 'default' : 'ghost'}
                   size="sm"
