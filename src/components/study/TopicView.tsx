@@ -133,6 +133,7 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
                 <CodeBlock
                   key={idx}
                   code={example.code}
+                  language={example.language}
                   title={example.title}
                   description={example.description}
                 />
