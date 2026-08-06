@@ -501,42 +501,25 @@ export async function GET(request: Request) {
     'backend',
   ],
   codeChallenge: {
-    instruction: 'Completa un Route Handler que recibe datos JSON por POST y responde con un status 201.',
-    template: `// app/api/users/route.ts
-import { {{next_response}} } from 'next/server';
+    instruction: 'Completa el Route Handler para crear un recurso.',
+    template: `import { NextResponse } from 'next/server';
 
-export async function {{method}}(request: Request) {
-  const body = await request.{{parse_body}}();
-  const { name, email } = body;
+export async function {{http_method}}(request: Request) {
+  const body = await request.{{parse_method}}();
 
-  // Simular guardar en DB
-  const newUser = { id: crypto.randomUUID(), name, email };
+  const newItem = { id: crypto.randomUUID(), ...body };
 
-  return {{next_response}}.json(newUser, { status: {{status}} });
+  return NextResponse.{{response_method}}(newItem, {
+    status: {{status_code}},
+  });
 }`,
     language: 'ts',
     blanks: [
-      {
-        id: 'next_response',
-        answers: ['NextResponse'],
-        placeholder: 'clase de respuesta de Next.js',
-      },
-      {
-        id: 'method',
-        answers: ['POST'],
-        placeholder: 'método HTTP para crear',
-      },
-      {
-        id: 'parse_body',
-        answers: ['json'],
-        placeholder: 'método para parsear el body',
-      },
-      {
-        id: 'status',
-        answers: ['201'],
-        placeholder: 'código HTTP de creación',
-      },
+      { id: 'http_method', answers: ['POST'], placeholder: 'METHOD' },
+      { id: 'parse_method', answers: ['json'], placeholder: 'method' },
+      { id: 'response_method', answers: ['json'], placeholder: 'method' },
+      { id: 'status_code', answers: ['201'], placeholder: 'code' },
     ],
-    hint: 'Los Route Handlers exportan funciones nombradas según el método HTTP. NextResponse.json() acepta datos y opciones como status.',
+    hint: 'Los Route Handlers exportan funciones con nombre del método HTTP. POST para crear. Status 201 = Created. request.json() parsea el body.',
   },
 };

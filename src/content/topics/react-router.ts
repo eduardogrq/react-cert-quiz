@@ -340,32 +340,21 @@ function ProductDetail() {
   prerequisites: ['components', 'hooks'],
   tags: ['react-router', 'Link', 'useNavigate', 'useParams', 'useSearchParams', 'routing'],
   codeChallenge: {
-    instruction: 'Configura rutas básicas con React Router y lee un parámetro dinámico.',
-    template: `import { {{router_component}}, Routes, Route, {{link_component}} } from 'react-router-dom';
-import { {{params_hook}} } from 'react-router-dom';
+    instruction: 'Completa la ruta dinámica y lee el parámetro en el componente.',
+    template: `import { useParams } from 'react-router-dom';
 
-function App() {
-  return (
-    <{{router_component}}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/user/{{param_syntax}}" element={<Profile />} />
-      </Routes>
-    </{{router_component}}>
-  );
-}
+// In your route config:
+// <Route path="/user/{{path_syntax}}" element={<Profile />} />
 
 function Profile() {
-  const { id } = {{params_hook}}();
-  return <h1>User: {id}</h1>;
+  const { {{param_name}} } = useParams();
+  return <h1>Usuario: {{{param_name}}}</h1>;
 }`,
     language: 'tsx',
     blanks: [
-      { id: 'router_component', answers: ['BrowserRouter'], placeholder: 'router' },
-      { id: 'link_component', answers: ['Link'], placeholder: 'componente' },
-      { id: 'params_hook', answers: ['useParams'], placeholder: 'hook' },
-      { id: 'param_syntax', answers: [':id', ':userId'], placeholder: 'parámetro' },
+      { id: 'path_syntax', answers: [':id', ':userId'], placeholder: '/user/???' },
+      { id: 'param_name', answers: ['id', 'userId'], placeholder: 'param' },
     ],
-    hint: 'BrowserRouter envuelve toda la app. Los parámetros dinámicos se definen con :nombre en el path y se leen con useParams().',
+    hint: 'Las rutas dinámicas usan :nombreParam en el path, y useParams() devuelve un objeto con ese nombre.',
   },
 };

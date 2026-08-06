@@ -451,53 +451,28 @@ export default function DashboardPage() {
   estimatedMinutes: 20,
   tags: ['next.js', 'navigation', 'Link', 'useRouter', 'prefetching', 'streaming', 'redirect', 'App Router'],
   codeChallenge: {
-    instruction: 'Completa el componente de navegación programática usando useRouter y los hooks de lectura de URL.',
+    instruction: 'Completa la navegación programática con useRouter.',
     template: `'use client';
 
-import { {{router_hook}}, usePathname, {{search_hook}} } from '{{import_path}}';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export function SearchForm() {
-  const router = {{router_hook}}();
-  const pathname = usePathname();
-  const searchParams = {{search_hook}}();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.{{get_method}}('q') ?? '';
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const query = formData.get('q') as string;
-    router.{{navigate_method}}(\`/buscar?q=\${encodeURIComponent(query)}\`);
+  function handleSubmit(term: string) {
+    router.{{navigate_method}}(\`/search?q=\${term}\`);
   }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input name="q" defaultValue={searchParams.get('q') ?? ''} />
-      <button type="submit">Buscar</button>
-    </form>
-  );
+  return <input defaultValue={query} onBlur={e => handleSubmit(e.target.{{value_prop}})} />;
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'router_hook',
-        answers: ['useRouter'],
-        placeholder: 'hook de router',
-      },
-      {
-        id: 'search_hook',
-        answers: ['useSearchParams'],
-        placeholder: 'hook de params',
-      },
-      {
-        id: 'import_path',
-        answers: ['next/navigation'],
-        placeholder: 'módulo de importación',
-      },
-      {
-        id: 'navigate_method',
-        answers: ['push'],
-        placeholder: 'método de navegación',
-      },
+      { id: 'get_method', answers: ['get'], placeholder: 'method' },
+      { id: 'navigate_method', answers: ['push', 'replace'], placeholder: 'method' },
+      { id: 'value_prop', answers: ['value'], placeholder: 'prop' },
     ],
-    hint: 'En App Router, todos los hooks de navegación se importan de next/navigation. El método push agrega una entrada al historial.',
+    hint: 'searchParams.get() lee un parámetro. router.push() navega a una nueva URL. e.target.value obtiene el valor del input.',
   },
 };

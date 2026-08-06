@@ -270,19 +270,19 @@ const element = React.createElement(
   tags: ['createRoot', 'createElement', 'react-element', 'virtual-dom', 'render'],
   codeChallenge: {
     instruction: 'Completa el código para montar una aplicación React en el DOM.',
-    template: `import { {{import_fn}} } from 'react-dom/client';
+    template: `import { createRoot } from '{{import_source}}';
 import App from './App';
 
 const container = document.getElementById('{{root_id}}');
-const root = {{create_call}}(container);
-root.{{render_method}}(<App />);`,
+const root = createRoot(container);
+root.{{render_method}}(<{{component}} />);`,
     language: 'tsx',
     blanks: [
-      { id: 'import_fn', answers: ['createRoot'], placeholder: '???' },
-      { id: 'root_id', answers: ['root', '"root"', "'root'"], placeholder: '???' },
-      { id: 'create_call', answers: ['createRoot'], placeholder: '???' },
-      { id: 'render_method', answers: ['render'], placeholder: '???' },
+      { id: 'import_source', answers: ['react-dom/client'], placeholder: 'package' },
+      { id: 'root_id', answers: ['root', 'app'], placeholder: 'id' },
+      { id: 'render_method', answers: ['render'], placeholder: 'method' },
+      { id: 'component', answers: ['App'], placeholder: 'Component' },
     ],
-    hint: 'React 18+ usa createRoot en lugar de ReactDOM.render para montar la aplicación.',
+    hint: 'createRoot se importa de react-dom/client y su método .render() recibe JSX.',
   },
 };

@@ -612,44 +612,26 @@ export async function POST(request: NextRequest) {
     'stale-while-revalidate',
   ],
   codeChallenge: {
-    instruction: 'Completa una función cacheada con "use cache", asignando un tiempo de vida y una etiqueta para invalidación selectiva.',
-    template: `import { {{cache_life}}, {{cache_tag}} } from 'next/cache';
+    instruction: 'Completa las directivas de caché en este Server Component.',
+    template: `import { cacheLife, cacheTag } from 'next/cache';
 
-async function getProducts() {
-  '{{directive}}';
-  {{cache_life}}('hours');
-  {{cache_tag}}('products');
+export async function ProductList() {
+  '{{cache_directive}}';
+  cacheLife('{{duration}}');
+  cacheTag('{{tag_name}}');
 
-  const res = await fetch('https://api.example.com/products');
-  return res.json();
+  const products = await fetch('/api/products').then(r => r.json());
+  return <ul>{products.map(p => <li key={p.id}>{p.name}</li>)}</ul>;
 }
 
-// Para invalidar manualmente:
-// import { {{revalidate}} } from 'next/cache';
-// {{revalidate}}('products');`,
-    language: 'ts',
+// To invalidate:
+// revalidateTag('{{tag_name}}');`,
+    language: 'tsx',
     blanks: [
-      {
-        id: 'cache_life',
-        answers: ['cacheLife'],
-        placeholder: 'función de duración del cache',
-      },
-      {
-        id: 'cache_tag',
-        answers: ['cacheTag'],
-        placeholder: 'función de etiqueta del cache',
-      },
-      {
-        id: 'directive',
-        answers: ['use cache'],
-        placeholder: 'directiva para cachear',
-      },
-      {
-        id: 'revalidate',
-        answers: ['revalidateTag'],
-        placeholder: 'función para invalidar por etiqueta',
-      },
+      { id: 'cache_directive', answers: ['use cache'], placeholder: 'directive' },
+      { id: 'duration', answers: ['hours', 'days', 'minutes', 'weeks'], placeholder: 'perfil' },
+      { id: 'tag_name', answers: ['products', 'product'], placeholder: 'tag' },
     ],
-    hint: '"use cache" marca la función como cacheable. cacheLife define cuánto dura, cacheTag le pone una etiqueta, y revalidateTag la invalida.',
+    hint: '"use cache" activa el caché. cacheLife define duración (hours, days, etc). cacheTag marca para invalidación selectiva con revalidateTag.',
   },
 };

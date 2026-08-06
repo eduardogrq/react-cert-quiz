@@ -341,31 +341,35 @@ Cambiar \`ref.current\` **nunca causa re-render** — es el casillero silencioso
   prerequisites: ['state'],
   tags: ['useEffect', 'useRef', 'side-effects', 'cleanup', 'dependencies', 'refs'],
   codeChallenge: {
-    instruction: 'Completa un useEffect que se suscriba a un evento del DOM y haga cleanup al desmontar.',
-    template: `import { useEffect, {{ref_hook}} } from 'react';
+    instruction: 'Completa el useEffect con suscripción y limpieza correcta.',
+    template: `import { useState, useEffect } from 'react';
 
-function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth);
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
 
-  {{effect_hook}}(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    window.{{add_listener}}('resize', handleResize);
+  useEffect(() => {
+    function handleChange() {
+      setIsOnline(navigator.{{online_prop}});
+    }
+
+    window.addEventListener('{{event_on}}', handleChange);
+    window.addEventListener('{{event_off}}', handleChange);
 
     return () => {
-      window.{{remove_listener}}('resize', handleResize);
+      window.{{remove_method}}('{{event_on}}', handleChange);
+      window.{{remove_method}}('{{event_off}}', handleChange);
     };
-  }, [{{deps}}]);
+  }, []);
 
-  return width;
+  return isOnline;
 }`,
-    language: 'ts',
+    language: 'tsx',
     blanks: [
-      { id: 'ref_hook', answers: ['useState'], placeholder: 'hook' },
-      { id: 'effect_hook', answers: ['useEffect'], placeholder: 'hook' },
-      { id: 'add_listener', answers: ['addEventListener'], placeholder: 'método' },
-      { id: 'remove_listener', answers: ['removeEventListener'], placeholder: 'método' },
-      { id: 'deps', answers: [''], placeholder: 'dependencias' },
+      { id: 'online_prop', answers: ['onLine'], placeholder: 'prop' },
+      { id: 'event_on', answers: ['online'], placeholder: 'event' },
+      { id: 'event_off', answers: ['offline'], placeholder: 'event' },
+      { id: 'remove_method', answers: ['removeEventListener'], placeholder: 'method' },
     ],
-    hint: 'useEffect recibe una función setup que puede retornar una función cleanup. El array vacío [] significa "solo al montar/desmontar".',
+    hint: 'navigator.onLine indica si hay conexión. Los eventos "online"/"offline" del window notifican cambios. La cleanup usa removeEventListener.',
   },
 };

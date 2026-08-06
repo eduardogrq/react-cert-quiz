@@ -456,46 +456,29 @@ const total = useMemo(
   prerequisites: ['state'],
   tags: ['state-structure', 'lifting-state', 'context', 'useContext', 'provider', 'prop-drilling', 'key-reset'],
   codeChallenge: {
-    instruction: 'Crea un Context con su Provider y consúmelo en un componente hijo usando useContext.',
-    template: `import { {{create_context}}, {{use_context}} } from 'react';
+    instruction: 'Completa el patrón Context para compartir el tema entre componentes.',
+    template: `import { createContext, useContext, useState } from 'react';
 
-const ThemeContext = {{create_context}}('light');
+const ThemeContext = createContext<string>('{{default_value}}');
 
-function ThemeLabel() {
-  const theme = {{use_context}}({{context_name}});
-  return <p>Current theme: {theme}</p>;
-}
-
-export default function App() {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState('{{default_value}}');
   return (
-    <ThemeContext.{{provider}} value="dark">
-      <ThemeLabel />
+    <ThemeContext.{{provider}} value={theme}>
+      {children}
     </ThemeContext.{{provider}}>
   );
+}
+
+export function useTheme() {
+  return {{use_hook}}(ThemeContext);
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'create_context',
-        answers: ['createContext'],
-        placeholder: 'función para crear contexto',
-      },
-      {
-        id: 'use_context',
-        answers: ['useContext'],
-        placeholder: 'hook para consumir contexto',
-      },
-      {
-        id: 'context_name',
-        answers: ['ThemeContext'],
-        placeholder: 'nombre del contexto',
-      },
-      {
-        id: 'provider',
-        answers: ['Provider'],
-        placeholder: 'componente que provee el valor',
-      },
+      { id: 'default_value', answers: ['dark', 'light'], placeholder: 'tema' },
+      { id: 'provider', answers: ['Provider'], placeholder: '???' },
+      { id: 'use_hook', answers: ['useContext'], placeholder: 'hook' },
     ],
-    hint: 'createContext crea el contexto, useContext lo consume, y el Provider envuelve el subárbol que necesita acceso al valor.',
+    hint: 'El Provider envuelve el árbol y pasa value. useContext consume el valor más cercano.',
   },
 };

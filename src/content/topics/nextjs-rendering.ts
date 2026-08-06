@@ -478,48 +478,33 @@ export default config;`,
     'app-router',
   ],
   codeChallenge: {
-    instruction: 'Completa la página que usa ISR con revalidación, generateStaticParams, y Partial Prerendering con Suspense.',
-    template: `import { {{suspense_import}} } from 'react';
-import { DynamicPrices } from './dynamic-prices';
+    instruction: 'Completa la configuración de ISR y Streaming con Suspense.',
+    template: `import { Suspense } from 'react';
 
-export const {{revalidate_export}} = 3600;
+// ISR: regenerar cada 60 segundos
+export const {{revalidate_export}} = 60;
 
-export async function {{static_params_fn}}() {
-  const products = await getProducts();
-  return products.map((p) => ({ slug: p.slug }));
+export default function Page() {
+  return (
+    <div>
+      <h1>Blog</h1>
+      <{{suspense_component}} fallback={<p>Cargando posts...</p>}>
+        <PostList />
+      </{{suspense_component}}>
+    </div>
+  );
 }
 
-export default async function ProductPage({ params }: Props) {
-  const { slug } = await params;
-  const product = await getProduct(slug);
-
-  return (
-    <main>
-      <h1>{product.name}</h1>
-      <{{suspense_import}} fallback={<p>Cargando precios...</p>}>
-        <DynamicPrices productId={product.id} />
-      </{{suspense_import}}>
-    </main>
-  );
+export async function {{static_params}}() {
+  const posts = await getPosts();
+  return posts.map(p => ({ slug: p.slug }));
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'suspense_import',
-        answers: ['Suspense'],
-        placeholder: 'componente de streaming',
-      },
-      {
-        id: 'revalidate_export',
-        answers: ['revalidate'],
-        placeholder: 'export de revalidación',
-      },
-      {
-        id: 'static_params_fn',
-        answers: ['generateStaticParams'],
-        placeholder: 'función para pre-generar rutas',
-      },
+      { id: 'revalidate_export', answers: ['revalidate'], placeholder: 'export' },
+      { id: 'suspense_component', answers: ['Suspense'], placeholder: 'Component' },
+      { id: 'static_params', answers: ['generateStaticParams'], placeholder: 'function' },
     ],
-    hint: 'Suspense marca los límites del streaming, revalidate define el intervalo de ISR, y generateStaticParams pre-genera las rutas estáticas.',
+    hint: 'export const revalidate = N activa ISR. Suspense permite streaming. generateStaticParams pre-genera rutas en build.',
   },
 };

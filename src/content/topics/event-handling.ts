@@ -307,33 +307,36 @@ function SearchForm() {
   prerequisites: ['components', 'state'],
   tags: ['events', 'forms', 'controlled', 'uncontrolled', 'preventDefault', 'FormData'],
   codeChallenge: {
-    instruction: 'Completa un formulario controlado que previene el envío por defecto y lee el valor del input.',
-    template: `function LoginForm() {
+    instruction: 'Completa el formulario controlado con manejo de eventos.',
+    template: `import { useState } from 'react';
+
+function LoginForm() {
   const [email, setEmail] = useState('');
 
-  function handleSubmit({{event_param}}) {
-    {{prevent}}.preventDefault();
-    console.log(email);
+  function handleSubmit(e: React.{{event_type}}) {
+    e.preventDefault();
+    console.log('Enviando:', email);
   }
 
   return (
-    <form {{on_submit}}={handleSubmit}>
+    <form {{submit_prop}}={handleSubmit}>
       <input
+        type="email"
         value={email}
-        {{on_change}}={(e) => setEmail(e.target.{{value_prop}})}
+        {{change_prop}}={(e) => setEmail(e.target.{{value_key}})}
       />
-      <button type="submit">Enviar</button>
+      <button type="{{btn_type}}">Enviar</button>
     </form>
   );
 }`,
     language: 'tsx',
     blanks: [
-      { id: 'event_param', answers: ['e', 'event', 'ev'], placeholder: 'evento' },
-      { id: 'prevent', answers: ['e', 'event', 'ev'], placeholder: 'evento' },
-      { id: 'on_submit', answers: ['onSubmit'], placeholder: 'evento form' },
-      { id: 'on_change', answers: ['onChange'], placeholder: 'evento input' },
-      { id: 'value_prop', answers: ['value'], placeholder: 'propiedad' },
+      { id: 'event_type', answers: ['FormEvent'], placeholder: 'Type' },
+      { id: 'submit_prop', answers: ['onSubmit'], placeholder: 'prop' },
+      { id: 'change_prop', answers: ['onChange'], placeholder: 'prop' },
+      { id: 'value_key', answers: ['value'], placeholder: 'key' },
+      { id: 'btn_type', answers: ['submit'], placeholder: 'type' },
     ],
-    hint: 'En React los eventos se nombran en camelCase (onClick, onSubmit, onChange). preventDefault() cancela el comportamiento por defecto del navegador.',
+    hint: 'onSubmit va en el form, onChange en el input. e.target.value obtiene el texto. El tipo del evento de form es FormEvent.',
   },
 };

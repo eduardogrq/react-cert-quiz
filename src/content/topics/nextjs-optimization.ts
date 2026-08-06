@@ -547,52 +547,34 @@ export function PostEditor() {
     'performance',
   ],
   codeChallenge: {
-    instruction: 'Completa el componente de imagen optimizada y el lazy loading de un componente pesado.',
-    template: `import {{image_component}} from 'next/image';
-import {{dynamic_fn}} from 'next/dynamic';
+    instruction: 'Completa las optimizaciones de imagen y carga diferida.',
+    template: `import Image from 'next/image';
+import dynamic from 'next/dynamic';
 
-const HeavyChart = {{dynamic_fn}}(() => import('@/components/HeavyChart'), {
-  loading: () => <div className="animate-pulse h-64 bg-muted" />,
-  {{ssr_option}}: false,
+const HeavyChart = dynamic(() => import('./Chart'), {
+  {{ssr_key}}: false,
+  loading: () => <p>Cargando...</p>,
 });
 
-export function Dashboard() {
+export function Hero() {
   return (
-    <main>
-      <{{image_component}}
+    <div>
+      <Image
         src="/hero.jpg"
-        alt="Dashboard"
+        alt="Hero"
         width={1200}
-        height={630}
+        height={600}
         {{priority_prop}}
       />
       <HeavyChart />
-    </main>
+    </div>
   );
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'image_component',
-        answers: ['Image'],
-        placeholder: 'componente de imagen',
-      },
-      {
-        id: 'dynamic_fn',
-        answers: ['dynamic'],
-        placeholder: 'función de carga dinámica',
-      },
-      {
-        id: 'ssr_option',
-        answers: ['ssr'],
-        placeholder: 'opción server-side',
-      },
-      {
-        id: 'priority_prop',
-        answers: ['priority'],
-        placeholder: 'prop para carga inmediata',
-      },
+      { id: 'ssr_key', answers: ['ssr'], placeholder: 'key' },
+      { id: 'priority_prop', answers: ['priority'], placeholder: 'prop' },
     ],
-    hint: 'Image de next/image, dynamic de next/dynamic con ssr: false para client-only, y priority para imágenes above-the-fold.',
+    hint: 'dynamic({ ssr: false }) desactiva SSR para componentes pesados. priority en Image carga la imagen con prioridad alta (LCP).',
   },
 };

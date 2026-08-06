@@ -382,23 +382,25 @@ function UserCard({ nombre, rol, avatar }: UserCardProps) {
   estimatedMinutes: 25,
   tags: ['javascript', 'es6', 'const', 'let', 'arrow-functions', 'destructuring', 'spread', 'rest', 'promises', 'modules'],
   codeChallenge: {
-    instruction: 'Usa destructuring, spread y arrow functions para transformar datos.',
-    template: `{{decl}} users = [{ name: 'Ana', age: 28 }, { name: 'Luis', age: 34 }];
+    instruction: 'Completa el código usando destructuring, spread y arrow functions.',
+    template: `// Destructuring
+const { {{prop1}}, {{prop2}} } = { name: 'React', version: 19 };
 
-const [{{first}}, ...rest] = users;
+// Spread para copiar y modificar
+const config = { theme: 'dark', lang: 'es' };
+const newConfig = { ...config, lang: '{{new_lang}}' };
 
-const greet = ({{param}}) {{arrow}} \`Hola, \${name}\`;
-
-const updated = users.{{method}}(user => ({{spread}}user, age: user.age + 1 }));`,
-    language: 'js',
+// Arrow function con map
+const nums = [1, 2, 3];
+const doubled = nums.{{method}}(n {{arrow}} n * 2);`,
+    language: 'ts',
     blanks: [
-      { id: 'decl', answers: ['const'], placeholder: 'declaración' },
-      { id: 'first', answers: ['first', 'firstUser', 'user1'], placeholder: 'variable' },
-      { id: 'param', answers: ['{ name }', 'name'], placeholder: 'parámetro' },
-      { id: 'arrow', answers: ['=>'], placeholder: 'operador' },
-      { id: 'spread', answers: ['{ ...', '...'], placeholder: 'operador' },
-      { id: 'method', answers: ['map'], placeholder: 'método' },
+      { id: 'prop1', answers: ['name'], placeholder: 'key' },
+      { id: 'prop2', answers: ['version'], placeholder: 'key' },
+      { id: 'new_lang', answers: ['en', 'fr', 'pt'], placeholder: 'valor' },
+      { id: 'method', answers: ['map'], placeholder: 'fn' },
+      { id: 'arrow', answers: ['=>'], placeholder: '?' },
     ],
-    hint: 'const declara sin reasignación, => define arrow functions, ... expande objetos/arrays, y map transforma cada elemento.',
+    hint: 'Destructuring extrae propiedades por nombre. Spread (...) copia objetos. Las arrow functions usan => en lugar de function.',
   },
 };

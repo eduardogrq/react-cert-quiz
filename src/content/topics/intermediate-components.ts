@@ -409,38 +409,33 @@ function Main() {
   prerequisites: ['components'],
   tags: ['pure-components', 'strict-mode', 'component-rules', 'ui-tree', 'idempotent', 'side-effects'],
   codeChallenge: {
-    instruction: 'Completa este componente puro que recibe props y retorna siempre el mismo resultado. Envuélvelo en StrictMode para detectar impurezas.',
-    template: `import { {{strict_mode}} } from 'react';
+    instruction: 'Completa el componente compuesto usando Context para comunicar padre e hijos.',
+    template: `const TabsContext = React.{{create_context}}(null);
 
-function Greeting({ name }: { name: string }) {
-  return <h1>Hello, {{{interpolation}}}</h1>;
+function Tabs({ children, defaultTab }: TabsProps) {
+  const [active, setActive] = useState(defaultTab);
+  return (
+    <TabsContext.{{provider}} value={{ active, setActive }}>
+      {{{children_prop}}}
+    </TabsContext.{{provider}}>
+  );
 }
 
-export default function App() {
+function Tab({ id, children }: TabProps) {
+  const { active, setActive } = React.{{use_context}}(TabsContext);
   return (
-    <{{strict_mode}}>
-      <{{component}} name="React" />
-    </{{strict_mode}}>
+    <button onClick={() => setActive(id)} data-active={active === id}>
+      {children}
+    </button>
   );
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'strict_mode',
-        answers: ['StrictMode'],
-        placeholder: 'modo estricto',
-      },
-      {
-        id: 'interpolation',
-        answers: ['name'],
-        placeholder: 'prop a mostrar',
-      },
-      {
-        id: 'component',
-        answers: ['Greeting'],
-        placeholder: 'nombre del componente',
-      },
+      { id: 'create_context', answers: ['createContext'], placeholder: '???' },
+      { id: 'provider', answers: ['Provider'], placeholder: '???' },
+      { id: 'children_prop', answers: ['children'], placeholder: '???' },
+      { id: 'use_context', answers: ['useContext'], placeholder: '???' },
     ],
-    hint: 'Un componente puro siempre retorna el mismo JSX dados los mismos props. StrictMode lo verifica llamándolo dos veces.',
+    hint: 'Los componentes compuestos usan createContext + Provider para compartir estado entre padre e hijos sin prop drilling.',
   },
 };

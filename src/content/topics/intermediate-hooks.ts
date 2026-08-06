@@ -481,46 +481,35 @@ useEffect(() => {
   prerequisites: ['hooks'],
   tags: ['useEffect', 'custom hooks', 'rules of hooks', 'lifecycle', 'stale closure', 'dependencies', 'cleanup'],
   codeChallenge: {
-    instruction: 'Crea un custom hook que use useEffect con cleanup para suscribirse a un evento del window y desuscribirse al desmontar.',
-    template: `import { {{use_effect}}, useState } from 'react';
+    instruction: 'Completa el reducer y el hook useReducer para un contador.',
+    template: `import { useReducer } from 'react';
 
-function {{hook_name}}() {
-  const [width, setWidth] = useState(window.innerWidth);
+function reducer(state: number, action: { type: string }) {
+  switch (action.{{action_key}}) {
+    case '{{increment_type}}':
+      return state + 1;
+    case 'decrement':
+      return state - 1;
+    default:
+      return state;
+  }
+}
 
-  {{use_effect}}(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.{{remove}}('resize', handleResize);
-    };
-  }, [{{deps}}]);
-
-  return width;
+function Counter() {
+  const [count, {{dispatch_name}}] = useReducer(reducer, {{initial}});
+  return (
+    <button onClick={() => {{dispatch_name}}({ type: '{{increment_type}}' })}>
+      {count}
+    </button>
+  );
 }`,
-    language: 'ts',
+    language: 'tsx',
     blanks: [
-      {
-        id: 'use_effect',
-        answers: ['useEffect'],
-        placeholder: 'hook de efecto',
-      },
-      {
-        id: 'hook_name',
-        answers: ['useWindowWidth', 'useWidth'],
-        placeholder: 'nombre del custom hook',
-      },
-      {
-        id: 'remove',
-        answers: ['removeEventListener'],
-        placeholder: 'método para desuscribir',
-      },
-      {
-        id: 'deps',
-        answers: [''],
-        placeholder: 'dependencias (vacío si ninguna)',
-      },
+      { id: 'action_key', answers: ['type'], placeholder: 'key' },
+      { id: 'increment_type', answers: ['increment'], placeholder: 'action' },
+      { id: 'dispatch_name', answers: ['dispatch'], placeholder: 'fn' },
+      { id: 'initial', answers: ['0'], placeholder: 'valor' },
     ],
-    hint: 'Los custom hooks empiezan con "use". La cleanup function se ejecuta al desmontar — ahí debes remover el event listener.',
+    hint: 'useReducer recibe (reducer, estadoInicial) y devuelve [estado, dispatch]. Las acciones usan type para identificarse.',
   },
 };

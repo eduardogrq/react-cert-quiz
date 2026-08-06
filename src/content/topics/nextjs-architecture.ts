@@ -423,43 +423,28 @@ export async function GET(request: Request) {
   estimatedMinutes: 25,
   tags: ['next.js', 'app-router', 'server-components', 'client-components', 'architecture', 'hydration', 'rsc'],
   codeChallenge: {
-    instruction: 'Completa la estructura de App Router: un layout de servidor y un Client Component interactivo con la directiva correcta.',
-    template: `// app/layout.tsx (Server Component por defecto)
-export default function RootLayout({ {{children}} }: { {{children}}: React.ReactNode }) {
-  return (
-    <html>
-      <body>{{{children}}}</body>
-    </html>
-  );
+    instruction: 'Completa el Server Component y el Client Component con sus directivas correctas.',
+    template: `// app/page.tsx (Server Component — no directive needed)
+export default async function Page() {
+  const data = await {{fetch_call}}('/api/posts');
+  return <PostList posts={data} />;
 }
 
-// app/components/Counter.tsx
-'{{directive}}';
+// components/LikeButton.tsx (Client Component)
+'{{client_directive}}';
 
-import { {{use_state}} } from 'react';
+import { {{state_hook}} } from 'react';
 
-export function Counter() {
-  const [count, setCount] = {{use_state}}(0);
-  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+export function LikeButton() {
+  const [liked, setLiked] = {{state_hook}}(false);
+  return <button onClick={() => setLiked(!liked)}>♥</button>;
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'children',
-        answers: ['children'],
-        placeholder: 'prop de contenido hijo',
-      },
-      {
-        id: 'directive',
-        answers: ['use client'],
-        placeholder: 'directiva para componente interactivo',
-      },
-      {
-        id: 'use_state',
-        answers: ['useState'],
-        placeholder: 'hook de estado',
-      },
+      { id: 'fetch_call', answers: ['fetch'], placeholder: '???' },
+      { id: 'client_directive', answers: ['use client'], placeholder: 'directive' },
+      { id: 'state_hook', answers: ['useState'], placeholder: 'hook' },
     ],
-    hint: 'En App Router, todo es Server Component por defecto. Para usar hooks interactivos como useState necesitas la directiva "use client".',
+    hint: 'Los Server Components pueden usar await directamente. Los Client Components necesitan la directiva "use client" para usar hooks.',
   },
 };

@@ -509,54 +509,28 @@ async function ArticleContent({ id }: { id: string }) {
     'preloading',
   ],
   codeChallenge: {
-    instruction: 'Completa un Server Component que hace fetch de datos en paralelo usando Promise.all para evitar waterfalls.',
-    template: `// app/dashboard/page.tsx
-async function getUser() {
-  const res = await fetch('https://api.example.com/user');
-  return res.json();
-}
-
-async function getPosts() {
-  const res = await fetch('https://api.example.com/posts');
-  return res.json();
-}
-
+    instruction: 'Completa el data fetching paralelo en un Server Component.',
+    template: `// app/dashboard/page.tsx (Server Component)
 export default async function Dashboard() {
-  const [user, posts] = await {{promise_method}}([
-    {{get_user}}(),
-    {{get_posts}}(),
+  // Fetch en paralelo — NO en secuencia
+  const [user, posts] = await {{parallel_method}}([
+    fetch('/api/user').then(r => r.{{parse}}()),
+    fetch('/api/posts').then(r => r.{{parse}}()),
   ]);
 
   return (
     <div>
-      <h1>{user.name}</h1>
-      <p>{posts.{{length}}} posts</p>
+      <h1>Hola, {user.{{name_field}}}</h1>
+      <p>{posts.length} publicaciones</p>
     </div>
   );
 }`,
     language: 'tsx',
     blanks: [
-      {
-        id: 'promise_method',
-        answers: ['Promise.all'],
-        placeholder: 'método para ejecutar en paralelo',
-      },
-      {
-        id: 'get_user',
-        answers: ['getUser'],
-        placeholder: 'función que obtiene el usuario',
-      },
-      {
-        id: 'get_posts',
-        answers: ['getPosts'],
-        placeholder: 'función que obtiene los posts',
-      },
-      {
-        id: 'length',
-        answers: ['length'],
-        placeholder: 'propiedad para contar elementos',
-      },
+      { id: 'parallel_method', answers: ['Promise.all'], placeholder: '???' },
+      { id: 'parse', answers: ['json'], placeholder: 'method' },
+      { id: 'name_field', answers: ['name', 'username'], placeholder: 'field' },
     ],
-    hint: 'Promise.all ejecuta múltiples promesas en paralelo. En Server Components puedes usar async/await directamente en el componente.',
+    hint: 'Promise.all ejecuta múltiples promesas en paralelo. .json() parsea la respuesta fetch. Los Server Components pueden usar await directamente.',
   },
 };
