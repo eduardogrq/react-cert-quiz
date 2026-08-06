@@ -59,6 +59,8 @@ export interface QuizQuestion {
 
 export interface Topic {
   id: string;
+  /** Course this topic belongs to */
+  courseId: string;
   title: string;
   realWorldAnalogy: RealWorldAnalogy;
   keyTerms: KeyTerm[];

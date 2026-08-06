@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const coreConceptsTopic: Topic = {
   id: 'core-concepts',
+  courseId: 'react-level-1',
   title: 'Core Concepts: Montar el escenario',
   realWorldAnalogy: {
     title: 'Montar el escenario para la obra',

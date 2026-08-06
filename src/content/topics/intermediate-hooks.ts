@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const intermediateHooksTopic: Topic = {
   id: 'intermediate-hooks',
+  courseId: 'react-level-2',
   title: 'Hooks Intermedios: El sistema de riego automático',
   realWorldAnalogy: {
     title: 'El sistema de riego automático del jardín',

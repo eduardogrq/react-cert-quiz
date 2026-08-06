@@ -1,26 +1,25 @@
 /**
- * Course Configuration
+ * Multi-Course Configuration
  *
- * This is the single source of truth for certification/course metadata.
- * To adapt the app for a different certification or language:
- *   1. Update this file with the new course info
- *   2. Replace/add topic files in src/content/topics/
- *   3. Update src/content/index.ts registry
+ * Each course represents a certification/language track.
+ * To add a new course (e.g., Python):
+ *   1. Add a new entry to the `courses` array below
+ *   2. Create topic files in src/content/topics/
+ *   3. Register them in src/content/index.ts with the courseId
  *
- * The rest of the UI automatically adapts.
+ * The UI automatically adapts to show course selection.
  */
 
 export interface CourseConfig {
-  /** Internal course ID (used for localStorage namespacing) */
+  /** Internal course ID */
   id: string;
-  /** Display name shown in the header and hero */
+  /** Display name */
   name: string;
-  /** Short badge label (e.g., "Junior React Developer") */
+  /** Short badge label */
   badge: string;
-  /** One-line description for meta/SEO */
+  /** One-line description */
   description: string;
-  /** The technical domain label used in analogy mapping tables
-   *  e.g., "En React/JS" or "En Python" or "En AWS" */
+  /** Technical domain label for analogy mapping tables */
   techLabel: string;
   /** Default exam configuration */
   exam: {
@@ -28,23 +27,65 @@ export interface CourseConfig {
     defaultDurationMinutes: number;
     defaultCutoff: number;
   };
-  /** localStorage key prefix to avoid collisions between courses */
-  storagePrefix: string;
-  /** Primary color hue (oklch) — allows visual theming per course */
-  hue?: number;
+  /** Primary color hue (oklch) — visual theming per course */
+  hue: number;
 }
 
-export const course: CourseConfig = {
-  id: 'react-cert',
+export interface AppConfig {
+  /** App-wide name */
+  name: string;
+  /** localStorage key prefix */
+  storagePrefix: string;
+  /** All available courses */
+  courses: CourseConfig[];
+}
+
+export const appConfig: AppConfig = {
   name: 'React Cert Quiz',
-  badge: 'React Developer (Level 1 & 2)',
-  description: 'Repaso interactivo para las certificaciones React Developer Level 1 y 2 — flashcards con SRS, quizzes, simulacro de examen y analogías del mundo real.',
-  techLabel: 'En React/JS',
-  exam: {
-    defaultQuestions: 50,
-    defaultDurationMinutes: 90,
-    defaultCutoff: 70,
-  },
   storagePrefix: 'rcq_v1_',
-  hue: 265,
+  courses: [
+    {
+      id: 'react-level-1',
+      name: 'React Level 1',
+      badge: 'Junior React Developer',
+      description: 'Fundamentos de React: JSX, componentes, props, estado, hooks y routing.',
+      techLabel: 'En React/JS',
+      exam: {
+        defaultQuestions: 30,
+        defaultDurationMinutes: 60,
+        defaultCutoff: 70,
+      },
+      hue: 265,
+    },
+    {
+      id: 'react-level-2',
+      name: 'React Level 2',
+      badge: 'Intermediate React Developer',
+      description: 'React intermedio: componentes puros, Context, hooks avanzados, TypeScript y tooling.',
+      techLabel: 'En React/JS',
+      exam: {
+        defaultQuestions: 40,
+        defaultDurationMinutes: 90,
+        defaultCutoff: 70,
+      },
+      hue: 220,
+    },
+  ],
+};
+
+/** Helper to get a course by ID */
+export function getCourseById(id: string): CourseConfig | undefined {
+  return appConfig.courses.find((c) => c.id === id);
+}
+
+/** Legacy single-course export for backward compatibility in i18n and components */
+export const course = {
+  id: appConfig.courses[0].id,
+  name: appConfig.name,
+  badge: appConfig.courses[0].badge,
+  description: appConfig.courses[0].description,
+  techLabel: appConfig.courses[0].techLabel,
+  exam: appConfig.courses[0].exam,
+  storagePrefix: appConfig.storagePrefix,
+  hue: appConfig.courses[0].hue,
 };

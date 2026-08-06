@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const intermediateComponentsTopic: Topic = {
   id: 'intermediate-components',
+  courseId: 'react-level-2',
   title: 'Componentes Intermedios: Pureza, StrictMode y el Árbol de UI',
   realWorldAnalogy: {
     title: 'La fábrica de helados artesanales',

@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const toolingTopic: Topic = {
   id: 'tooling',
+  courseId: 'react-level-2',
   title: 'Tooling: El taller del artesano',
   realWorldAnalogy: {
     title: 'El taller del artesano',

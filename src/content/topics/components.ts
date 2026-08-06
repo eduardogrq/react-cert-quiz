@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const componentsTopic: Topic = {
   id: 'components',
+  courseId: 'react-level-1',
   title: 'Components: Bloques LEGO',
   realWorldAnalogy: {
     title: 'Los bloques LEGO',

@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const intermediateStateTopic: Topic = {
   id: 'intermediate-state',
+  courseId: 'react-level-2',
   title: 'Estado Intermedio: Estructura, Compartir y Context',
   realWorldAnalogy: {
     title: 'El tablero de anuncios del edificio',

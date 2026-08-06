@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const hooksTopic: Topic = {
   id: 'hooks',
+  courseId: 'react-level-1',
   title: 'Hooks: El conserje del edificio',
   realWorldAnalogy: {
     title: 'El conserje del edificio',

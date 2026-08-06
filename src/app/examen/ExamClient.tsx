@@ -13,16 +13,13 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { ExamTimer } from '@/components/quiz/ExamTimer';
 import { QuizResults } from '@/components/quiz/QuizResults';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { CourseSelector } from '@/components/layout/CourseSelector';
+import { useSelectedCourse } from '@/lib/hooks/use-selected-course';
 import { seededShuffle } from '@/lib/shuffle';
 import { springSnappy } from '@/lib/motion';
-import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
-import type { Topic, QuizQuestion } from '@/content/types';
+import type { QuizQuestion } from '@/content/types';
 import type { QuizResultData } from '@/components/quiz/QuizEngine';
-
-interface ExamClientProps {
-  topics: Topic[];
-}
 
 interface ExamQuestion extends QuizQuestion {
   _topicId: string;
@@ -37,7 +34,8 @@ const MAX_DURATION = 180;
 const MIN_CUTOFF = 1;
 const MAX_CUTOFF = 100;
 
-export function ExamClient({ topics }: ExamClientProps) {
+export function ExamClient() {
+  const { courseId, setCourseId, course, courseTopics: topics } = useSelectedCourse();
   const [state, setState] = useState<ExamState>('setup');
   const [questionCount, setQuestionCount] = useState(String(course.exam.defaultQuestions));
   const [durationMinutes, setDurationMinutes] = useState(String(course.exam.defaultDurationMinutes));
@@ -54,17 +52,17 @@ export function ExamClient({ topics }: ExamClientProps) {
   const parsedQuestionCount = useMemo(() => {
     const n = parseInt(questionCount) || course.exam.defaultQuestions;
     return Math.min(maxQuestions, Math.max(MIN_QUESTIONS, n));
-  }, [questionCount, maxQuestions]);
+  }, [questionCount, maxQuestions, course.exam.defaultQuestions]);
 
   const parsedDuration = useMemo(() => {
     const n = parseInt(durationMinutes) || course.exam.defaultDurationMinutes;
     return Math.min(MAX_DURATION, Math.max(MIN_DURATION, n));
-  }, [durationMinutes]);
+  }, [durationMinutes, course.exam.defaultDurationMinutes]);
 
   const parsedCutoff = useMemo(() => {
     const n = parseInt(cutoff) || course.exam.defaultCutoff;
     return Math.min(MAX_CUTOFF, Math.max(MIN_CUTOFF, n));
-  }, [cutoff]);
+  }, [cutoff, course.exam.defaultCutoff]);
 
   // Generate exam questions
   const examQuestions: ExamQuestion[] = useMemo(() => {
@@ -332,6 +330,10 @@ export function ExamClient({ topics }: ExamClientProps) {
         <p className="text-muted-foreground text-base">
           Simula las condiciones reales del examen de certificación
         </p>
+      </div>
+
+      <div className="flex justify-center">
+        <CourseSelector selectedCourseId={courseId} onSelect={setCourseId} />
       </div>
 
       <Card className="border-border/60">

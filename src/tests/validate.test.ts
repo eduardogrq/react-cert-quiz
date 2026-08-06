@@ -20,6 +20,7 @@ describe('validateTopics', () => {
   it('falla si mapping tiene menos de 2 pares', () => {
     const badTopic: Topic = {
       id: 'bad',
+      courseId: 'test',
       title: 'Bad Topic',
       realWorldAnalogy: {
         title: 'Test',
@@ -58,6 +59,7 @@ describe('validateTopics', () => {
   it('falla si no hay flashcard con usesAnalogy', () => {
     const badTopic: Topic = {
       id: 'bad2',
+      courseId: 'test',
       title: 'Bad Topic 2',
       realWorldAnalogy: {
         title: 'La prueba',

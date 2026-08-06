@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const eventHandlingTopic: Topic = {
   id: 'event-handling',
+  courseId: 'react-level-1',
   title: 'Event Handling: El timbre del edificio',
   realWorldAnalogy: {
     title: 'El timbre del edificio',

@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const typescriptReactTopic: Topic = {
   id: 'typescript-react',
+  courseId: 'react-level-2',
   title: 'TypeScript con React: El contrato del arquitecto',
   realWorldAnalogy: {
     title: 'El contrato del arquitecto',

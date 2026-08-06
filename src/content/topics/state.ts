@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const stateTopic: Topic = {
   id: 'state',
+  courseId: 'react-level-1',
   title: 'State: La memoria del componente',
   realWorldAnalogy: {
     title: 'La pizarra mágica del restaurante',

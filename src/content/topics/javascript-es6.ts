@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const javascriptEs6Topic: Topic = {
   id: 'javascript-es6',
+  courseId: 'react-level-1',
   title: 'JavaScript ES6+: La base moderna',
   realWorldAnalogy: {
     title: 'La caja de herramientas moderna',

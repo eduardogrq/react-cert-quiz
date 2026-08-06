@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { CourseSelector } from '@/components/layout/CourseSelector';
+import { useSelectedCourse } from '@/lib/hooks/use-selected-course';
 import { es } from '@/lib/i18n/es';
 import type { KeyTerm } from '@/content/types';
 
@@ -14,12 +16,19 @@ interface GlossaryEntry extends KeyTerm {
   topicTitle: string;
 }
 
-interface GlosarioClientProps {
-  entries: GlossaryEntry[];
-}
-
-export function GlosarioClient({ entries }: GlosarioClientProps) {
+export function GlosarioClient() {
+  const { courseId, setCourseId, courseTopics } = useSelectedCourse();
   const [filter, setFilter] = useState('');
+
+  const entries: GlossaryEntry[] = useMemo(() => {
+    const all: GlossaryEntry[] = [];
+    for (const topic of courseTopics) {
+      for (const term of topic.keyTerms) {
+        all.push({ ...term, topicId: topic.id, topicTitle: topic.title });
+      }
+    }
+    return all.sort((a, b) => a.term.localeCompare(b.term));
+  }, [courseTopics]);
 
   const filtered = useMemo(() => {
     if (!filter.trim()) return entries;
@@ -41,6 +50,8 @@ export function GlosarioClient({ entries }: GlosarioClientProps) {
           {entries.length} términos
         </Badge>
       </div>
+
+      <CourseSelector selectedCourseId={courseId} onSelect={setCourseId} />
 
       {/* Filter */}
       <div className="relative">

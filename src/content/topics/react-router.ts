@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const reactRouterTopic: Topic = {
   id: 'react-router',
+  courseId: 'react-level-1',
   title: 'React Router: Los letreros del metro',
   realWorldAnalogy: {
     title: 'Los letreros del metro',

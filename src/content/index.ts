@@ -13,30 +13,41 @@ import { intermediateHooksTopic } from './topics/intermediate-hooks';
 import { reactRouterTopic } from './topics/react-router';
 import { typescriptReactTopic } from './topics/typescript-react';
 
-/** Registry central de todos los temas — agregar aquí cada tema nuevo */
+/** All topics across all courses */
 export const topics: Topic[] = [
-  // Level 1 & 2 shared foundations
+  // React Level 1
   javascriptEs6Topic,
   coreConceptsTopic,
-  toolingTopic,
   jsxTopic,
   componentsTopic,
-  intermediateComponentsTopic,
   eventHandlingTopic,
   stateTopic,
-  intermediateStateTopic,
   hooksTopic,
-  intermediateHooksTopic,
   reactRouterTopic,
+  // React Level 2
+  toolingTopic,
+  intermediateComponentsTopic,
+  intermediateStateTopic,
+  intermediateHooksTopic,
   typescriptReactTopic,
 ];
 
-/** Buscar tema por ID */
+/** Get topics filtered by courseId */
+export function getTopicsByCourse(courseId: string): Topic[] {
+  return topics.filter((t) => t.courseId === courseId);
+}
+
+/** Find a single topic by ID */
 export function getTopicById(id: string): Topic | undefined {
   return topics.find((t) => t.id === id);
 }
 
-/** Obtener todos los IDs de temas */
+/** Get all topic IDs */
 export function getTopicIds(): string[] {
   return topics.map((t) => t.id);
+}
+
+/** Get topic IDs for a specific course */
+export function getTopicIdsByCourse(courseId: string): string[] {
+  return topics.filter((t) => t.courseId === courseId).map((t) => t.id);
 }

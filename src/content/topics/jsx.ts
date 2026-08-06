@@ -2,6 +2,7 @@ import type { Topic } from '../types';
 
 export const jsxTopic: Topic = {
   id: 'jsx',
+  courseId: 'react-level-1',
   title: 'JSX: Markup con superpoderes',
   realWorldAnalogy: {
     title: 'La receta con ingredientes variables',

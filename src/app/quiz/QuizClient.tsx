@@ -6,13 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { QuizEngine, type QuizResultData } from '@/components/quiz/QuizEngine';
 import { QuizResults } from '@/components/quiz/QuizResults';
+import { CourseSelector } from '@/components/layout/CourseSelector';
+import { useSelectedCourse } from '@/lib/hooks/use-selected-course';
 import { shuffle } from '@/lib/shuffle';
 import { es } from '@/lib/i18n/es';
-import type { Topic, QuizQuestion } from '@/content/types';
-
-interface QuizClientProps {
-  topics: Topic[];
-}
+import type { QuizQuestion } from '@/content/types';
 
 type QuizState = 'setup' | 'active' | 'results';
 
@@ -21,7 +19,8 @@ interface TaggedQuestion extends QuizQuestion {
   _topicTitle: string;
 }
 
-export function QuizClient({ topics }: QuizClientProps) {
+export function QuizClient() {
+  const { courseId, setCourseId, courseTopics } = useSelectedCourse();
   const [state, setState] = useState<QuizState>('setup');
   const [selectedTopicId, setSelectedTopicId] = useState<string | 'all'>('all');
   const [results, setResults] = useState<QuizResultData | null>(null);
@@ -29,12 +28,12 @@ export function QuizClient({ topics }: QuizClientProps) {
 
   const { questions, analogy, topicTitle } = useMemo(() => {
     if (selectedTopicId === 'all') {
-      const allQ: TaggedQuestion[] = topics.flatMap((t) =>
+      const allQ: TaggedQuestion[] = courseTopics.flatMap((t) =>
         t.quiz.map((q) => ({ ...q, _topicId: t.id, _topicTitle: t.title }))
       );
       return { questions: shuffle(allQ), analogy: undefined, topicTitle: 'Mixto' };
     }
-    const topic = topics.find((t) => t.id === selectedTopicId);
+    const topic = courseTopics.find((t) => t.id === selectedTopicId);
     if (!topic) return { questions: [], analogy: undefined, topicTitle: '' };
     const tagged: TaggedQuestion[] = topic.quiz.map((q) => ({
       ...q,
@@ -47,7 +46,7 @@ export function QuizClient({ topics }: QuizClientProps) {
       topicTitle: topic.title,
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTopicId, topics, sessionKey]);
+  }, [selectedTopicId, courseTopics, sessionKey]);
 
   const topicBreakdown = useMemo(() => {
     if (!results) return undefined;
@@ -111,6 +110,8 @@ export function QuizClient({ topics }: QuizClientProps) {
         <h1 className="text-3xl font-bold">{es.nav.quiz}</h1>
       </div>
 
+      <CourseSelector selectedCourseId={courseId} onSelect={setCourseId} />
+
       {/* Topic selector */}
       <Card>
         <CardContent className="p-6 space-y-4">
@@ -121,9 +122,9 @@ export function QuizClient({ topics }: QuizClientProps) {
               size="sm"
               onClick={() => setSelectedTopicId('all')}
             >
-              {es.quiz.mixed} ({topics.reduce((s, t) => s + t.quiz.length, 0)})
+              {es.quiz.mixed} ({courseTopics.reduce((s, t) => s + t.quiz.length, 0)})
             </Button>
-            {topics.map((topic) => (
+            {courseTopics.map((topic) => (
               <Button
                 key={topic.id}
                 variant={selectedTopicId === topic.id ? 'default' : 'outline'}
