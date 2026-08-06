@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Flag, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Flag, ChevronLeft, ChevronRight, AlertTriangle, Clock, HelpCircle, Target, ListChecks } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { ExamTimer } from '@/components/quiz/ExamTimer';
 import { QuizResults } from '@/components/quiz/QuizResults';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { seededShuffle } from '@/lib/shuffle';
+import { springSnappy } from '@/lib/motion';
 import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
 import type { Topic, QuizQuestion } from '@/content/types';
 import type { QuizResultData } from '@/components/quiz/QuizEngine';
+
 interface ExamClientProps {
   topics: Topic[];
 }
@@ -24,17 +31,40 @@ interface ExamQuestion extends QuizQuestion {
 
 type ExamState = 'setup' | 'active' | 'results';
 
+const MIN_QUESTIONS = 5;
+const MIN_DURATION = 5;
+const MAX_DURATION = 180;
+const MIN_CUTOFF = 1;
+const MAX_CUTOFF = 100;
 
 export function ExamClient({ topics }: ExamClientProps) {
   const [state, setState] = useState<ExamState>('setup');
-  const [questionCount, setQuestionCount] = useState(course.exam.defaultQuestions);
-  const [durationMinutes, setDurationMinutes] = useState(course.exam.defaultDurationMinutes);
-  const [cutoff, setCutoff] = useState(course.exam.defaultCutoff);
+  const [questionCount, setQuestionCount] = useState(String(course.exam.defaultQuestions));
+  const [durationMinutes, setDurationMinutes] = useState(String(course.exam.defaultDurationMinutes));
+  const [cutoff, setCutoff] = useState(String(course.exam.defaultCutoff));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<QuizResultData | null>(null);
   const [seed] = useState(() => Date.now());
+
+  const maxQuestions = topics.reduce((s, t) => s + t.quiz.length, 0);
+
+  // Parse and clamp values on submit, not on every keystroke
+  const parsedQuestionCount = useMemo(() => {
+    const n = parseInt(questionCount) || course.exam.defaultQuestions;
+    return Math.min(maxQuestions, Math.max(MIN_QUESTIONS, n));
+  }, [questionCount, maxQuestions]);
+
+  const parsedDuration = useMemo(() => {
+    const n = parseInt(durationMinutes) || course.exam.defaultDurationMinutes;
+    return Math.min(MAX_DURATION, Math.max(MIN_DURATION, n));
+  }, [durationMinutes]);
+
+  const parsedCutoff = useMemo(() => {
+    const n = parseInt(cutoff) || course.exam.defaultCutoff;
+    return Math.min(MAX_CUTOFF, Math.max(MIN_CUTOFF, n));
+  }, [cutoff]);
 
   // Generate exam questions
   const examQuestions: ExamQuestion[] = useMemo(() => {
@@ -42,20 +72,25 @@ export function ExamClient({ topics }: ExamClientProps) {
       t.quiz.map((q) => ({ ...q, _topicId: t.id, _topicTitle: t.title }))
     );
     const shuffled = seededShuffle(allQ, seed);
-    return shuffled.slice(0, Math.min(questionCount, shuffled.length));
-  }, [topics, seed, questionCount]);
+    return shuffled.slice(0, Math.min(parsedQuestionCount, shuffled.length));
+  }, [topics, seed, parsedQuestionCount]);
 
   const currentQuestion = examQuestions[currentIndex];
   const answeredCount = Object.keys(answers).length;
-  const progress = Math.round((answeredCount / examQuestions.length) * 100);
+  const progress = examQuestions.length > 0 ? Math.round((answeredCount / examQuestions.length) * 100) : 0;
 
   const handleStart = useCallback(() => {
+    if (parsedQuestionCount < MIN_QUESTIONS) {
+      toast.error(`Mínimo ${MIN_QUESTIONS} preguntas`);
+      return;
+    }
     setState('active');
     setCurrentIndex(0);
     setAnswers({});
     setFlagged(new Set());
     setResults(null);
-  }, []);
+    toast(`Simulacro iniciado — ${parsedQuestionCount} preguntas, ${parsedDuration} min`);
+  }, [parsedQuestionCount, parsedDuration]);
 
   const handleSelect = useCallback((optionId: string) => {
     if (!currentQuestion) return;
@@ -68,14 +103,20 @@ export function ExamClient({ topics }: ExamClientProps) {
       const next = new Set(prev);
       if (next.has(currentQuestion.id)) {
         next.delete(currentQuestion.id);
+        toast('Marca removida');
       } else {
         next.add(currentQuestion.id);
+        toast('Pregunta marcada para revisión');
       }
       return next;
     });
   }, [currentQuestion]);
 
   const handleFinish = useCallback(() => {
+    const unanswered = examQuestions.length - Object.keys(answers).length;
+    if (unanswered > 0) {
+      toast.warning(`Tienes ${unanswered} pregunta${unanswered > 1 ? 's' : ''} sin responder`);
+    }
     const correctCount = examQuestions.filter(
       (q) => answers[q.id] === q.correctOptionId
     ).length;
@@ -88,6 +129,7 @@ export function ExamClient({ topics }: ExamClientProps) {
   }, [examQuestions, answers]);
 
   const handleTimeUp = useCallback(() => {
+    toast.error('¡Tiempo agotado!');
     handleFinish();
   }, [handleFinish]);
 
@@ -109,15 +151,15 @@ export function ExamClient({ topics }: ExamClientProps) {
   // === RESULTS ===
   if (state === 'results' && results) {
     const score = Math.round((results.correctCount / results.totalCount) * 100);
-    const passed = score >= cutoff;
+    const passed = score >= parsedCutoff;
     return (
-      <div className="space-y-8">
+      <PageTransition className="space-y-8">
         <div className="text-center">
           <Badge variant={passed ? 'default' : 'destructive'} className="text-lg px-5 py-1.5">
             {passed ? es.exam.passed : es.exam.failed}
           </Badge>
           <p className="text-base text-muted-foreground mt-3">
-            {es.exam.cutoffScore}: {cutoff}% · {es.exam.yourScore}: {score}%
+            {es.exam.cutoffScore}: {parsedCutoff}% · {es.exam.yourScore}: {score}%
           </p>
         </div>
         <QuizResults
@@ -125,7 +167,7 @@ export function ExamClient({ topics }: ExamClientProps) {
           topicBreakdown={topicBreakdown}
           onRestart={() => setState('setup')}
         />
-      </div>
+      </PageTransition>
     );
   }
 
@@ -143,7 +185,7 @@ export function ExamClient({ topics }: ExamClientProps) {
               {currentIndex + 1} / {examQuestions.length}
             </span>
             <ExamTimer
-              durationMinutes={durationMinutes}
+              durationMinutes={parsedDuration}
               onTimeUp={handleTimeUp}
               running={true}
             />
@@ -152,36 +194,50 @@ export function ExamClient({ topics }: ExamClientProps) {
         </div>
 
         {/* Question */}
-        <Card>
-          <CardContent className="p-7">
-            <p className="text-lg font-medium whitespace-pre-wrap leading-relaxed">
-              {currentQuestion.question}
-            </p>
-          </CardContent>
-        </Card>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card>
+              <CardContent className="p-7">
+                <p className="text-lg font-medium whitespace-pre-wrap leading-relaxed">
+                  {currentQuestion.question}
+                </p>
+              </CardContent>
+            </Card>
 
-        {/* Options */}
-        <div className="space-y-2.5">
-          {currentQuestion.options.map((option, idx) => {
-            const isSelected = selectedOption === option.id;
-            return (
-              <button
-                key={option.id}
-                onClick={() => handleSelect(option.id)}
-                className={`w-full text-left p-5 rounded-lg border-2 transition-all cursor-pointer ${
-                  isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-sm font-mono text-muted-foreground mt-0.5">
-                    {idx + 1}
-                  </span>
-                  <span className="text-base">{option.text}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+            {/* Options */}
+            <div className="space-y-2.5 mt-5">
+              {currentQuestion.options.map((option, idx) => {
+                const isSelected = selectedOption === option.id;
+                return (
+                  <motion.button
+                    key={option.id}
+                    whileTap={{ scale: 0.98 }}
+                    transition={springSnappy}
+                    onClick={() => handleSelect(option.id)}
+                    className={`w-full text-left p-5 rounded-lg border-2 transition-all cursor-pointer ${
+                      isSelected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border hover:border-primary/40'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className={`text-sm font-mono mt-0.5 w-5 h-5 flex items-center justify-center rounded-full ${
+                        isSelected ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                      }`}>
+                        {idx + 1}
+                      </span>
+                      <span className="text-base">{option.text}</span>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Navigation */}
         <div className="flex items-center justify-between pt-2">
@@ -195,15 +251,24 @@ export function ExamClient({ topics }: ExamClientProps) {
             Anterior
           </Button>
 
-          <Button
-            variant={isFlagged ? 'default' : 'ghost'}
-            size="sm"
-            onClick={handleToggleFlag}
-            className="gap-1"
-          >
-            <Flag className="h-4 w-4" />
-            {isFlagged ? 'Marcada' : es.exam.markForReview}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  variant={isFlagged ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={handleToggleFlag}
+                  className="gap-1"
+                >
+                  <Flag className="h-4 w-4" />
+                  <span className="hidden sm:inline">{isFlagged ? 'Marcada' : es.exam.markForReview}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Marca para revisarla antes de enviar
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {currentIndex + 1 < examQuestions.length ? (
             <Button
@@ -233,7 +298,7 @@ export function ExamClient({ topics }: ExamClientProps) {
                 const isAnswered = !!answers[q.id];
                 const isFlag = flagged.has(q.id);
                 const isCurrent = idx === currentIndex;
-                let cls = 'w-8 h-8 text-sm rounded border';
+                let cls = 'w-8 h-8 text-sm rounded border transition-all cursor-pointer';
                 if (isCurrent) cls += ' border-primary ring-2 ring-primary/30';
                 else cls += ' border-border';
                 if (isAnswered) cls += ' bg-primary/20';
@@ -260,64 +325,116 @@ export function ExamClient({ topics }: ExamClientProps) {
   }
 
   // === SETUP ===
-  const maxQuestions = topics.reduce((s, t) => s + t.quiz.length, 0);
-
   return (
-    <div className="space-y-8 max-w-md mx-auto">
-      <h1 className="text-3xl font-bold text-center">{es.nav.exam}</h1>
+    <PageTransition className="space-y-8 max-w-md mx-auto">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold">{es.nav.exam}</h1>
+        <p className="text-muted-foreground text-base">
+          Simula las condiciones reales del examen de certificación
+        </p>
+      </div>
 
-      <Card>
+      <Card className="border-border/60">
         <CardHeader>
           <CardTitle className="text-lg">Configuración del simulacro</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="space-y-1.5">
-            <label className="text-base font-medium" htmlFor="q-count">
-              Preguntas ({maxQuestions} disponibles)
-            </label>
-            <input
+        <CardContent className="space-y-6">
+          {/* Question count */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <ListChecks className="h-4 w-4 text-muted-foreground" />
+              <label className="text-sm font-medium" htmlFor="q-count">
+                Preguntas
+              </label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Mínimo {MIN_QUESTIONS}, máximo {maxQuestions} disponibles
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <Input
               id="q-count"
               type="number"
-              min={5}
+              min={MIN_QUESTIONS}
               max={maxQuestions}
               value={questionCount}
-              onChange={(e) => setQuestionCount(Math.min(maxQuestions, Math.max(5, parseInt(e.target.value) || 5)))}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-base"
+              onChange={(e) => setQuestionCount(e.target.value)}
+              onBlur={() => setQuestionCount(String(parsedQuestionCount))}
+              className="h-10"
             />
+            <p className="text-xs text-muted-foreground">
+              {maxQuestions} preguntas disponibles en total
+            </p>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-base font-medium" htmlFor="duration">
-              Duración (minutos)
-            </label>
-            <input
+          {/* Duration */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <label className="text-sm font-medium" htmlFor="duration">
+                Duración (minutos)
+              </label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Entre {MIN_DURATION} y {MAX_DURATION} minutos
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <Input
               id="duration"
               type="number"
-              min={5}
-              max={180}
+              min={MIN_DURATION}
+              max={MAX_DURATION}
               value={durationMinutes}
-              onChange={(e) => setDurationMinutes(Math.min(180, Math.max(5, parseInt(e.target.value) || 5)))}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-base"
+              onChange={(e) => setDurationMinutes(e.target.value)}
+              onBlur={() => setDurationMinutes(String(parsedDuration))}
+              className="h-10"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-base font-medium" htmlFor="cutoff">
-              Nota de corte (%)
-            </label>
-            <input
+          {/* Cutoff */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-muted-foreground" />
+              <label className="text-sm font-medium" htmlFor="cutoff">
+                Nota de corte (%)
+              </label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Porcentaje mínimo para aprobar (examen real: 70%)
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <Input
               id="cutoff"
               type="number"
-              min={1}
-              max={100}
+              min={MIN_CUTOFF}
+              max={MAX_CUTOFF}
               value={cutoff}
-              onChange={(e) => setCutoff(Math.min(100, Math.max(1, parseInt(e.target.value) || 70)))}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-base"
+              onChange={(e) => setCutoff(e.target.value)}
+              onBlur={() => setCutoff(String(parsedCutoff))}
+              className="h-10"
             />
           </div>
 
-          <div className="p-4 rounded-md bg-muted text-base text-muted-foreground flex gap-3">
-            <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
+          {/* Info banner */}
+          <div className="p-4 rounded-lg bg-muted/50 border border-border/50 text-sm text-muted-foreground flex gap-3">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-yellow-500" />
             <span>No verás feedback hasta terminar. Puedes marcar preguntas para revisarlas antes de enviar.</span>
           </div>
 
@@ -326,6 +443,6 @@ export function ExamClient({ topics }: ExamClientProps) {
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </PageTransition>
   );
 }
