@@ -31,21 +31,21 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
     <div className="space-y-2">
       {/* Header with progress bar */}
       <div className="sticky top-16 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 -mx-4 px-4 py-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Link
               href="/temas"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Temas</span>
             </Link>
-            <span className="text-border">|</span>
-            <Badge variant="secondary" className="font-medium text-sm">
+            <span className="text-border hidden sm:inline">|</span>
+            <Badge variant="secondary" className="font-medium text-xs sm:text-sm shrink-0">
               {es.difficulty[topic.difficulty]}
             </Badge>
-            <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-              <Clock className="h-4 w-4" />
+            <span className="text-xs sm:text-sm text-muted-foreground items-center gap-1 hidden sm:flex">
+              <Clock className="h-3.5 w-3.5" />
               {topic.estimatedMinutes} {es.study.estimatedTime}
             </span>
           </div>
@@ -53,14 +53,15 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
             variant={isReviewed ? 'default' : 'outline'}
             size="sm"
             onClick={onMarkReviewed}
-            className={`gap-1.5 ${isReviewed ? 'shadow-sm' : ''}`}
+            className={`gap-1.5 shrink-0 ${isReviewed ? 'shadow-sm' : ''}`}
           >
             {isReviewed ? (
               <CheckCircle2 className="h-3.5 w-3.5" />
             ) : (
               <Circle className="h-3.5 w-3.5" />
             )}
-            {isReviewed ? es.study.reviewed : es.study.markAsReviewed}
+            <span className="hidden sm:inline">{isReviewed ? es.study.reviewed : es.study.markAsReviewed}</span>
+            <span className="sm:hidden">{isReviewed ? '✓' : 'Repasar'}</span>
           </Button>
         </div>
         <Progress value={readProgress} className="h-1" />
