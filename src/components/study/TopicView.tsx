@@ -180,18 +180,28 @@ export function TopicView({ topic, nextTopic, isReviewed = false, onMarkReviewed
         {topic.cheatSheet && topic.cheatSheet.length > 0 && (
           <section aria-labelledby="cheatsheet-heading" className="space-y-4">
             <SectionHeading id="cheatsheet-heading" icon={Zap} title={es.study.cheatSheet} />
-            <Card className="border-primary/15 bg-primary/[0.03]">
-              <CardContent className="p-6">
-                <ul className="space-y-3">
-                  {topic.cheatSheet.map((item, idx) => (
-                    <li key={idx} className="text-base font-mono text-muted-foreground flex gap-2 leading-relaxed">
-                      <span className="text-primary/60 shrink-0">{'>'}</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border border-border/60 overflow-hidden shadow-sm">
+              {/* Terminal header */}
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-[#282c34] border-b border-[#3e4451]">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-[#e06c75]/80" />
+                  <div className="h-3 w-3 rounded-full bg-[#e5c07b]/80" />
+                  <div className="h-3 w-3 rounded-full bg-[#98c379]/80" />
+                </div>
+                <span className="text-xs text-[#abb2bf]/60 font-mono ml-2">quick-reference</span>
+              </div>
+              {/* Content */}
+              <div className="bg-[#282c34] p-4 sm:p-5 space-y-2">
+                {topic.cheatSheet.map((item, idx) => (
+                  <div key={idx} className="flex gap-2.5 items-start group/item">
+                    <span className="text-[#56b6c2] font-mono text-sm shrink-0 mt-0.5 select-none">$</span>
+                    <span className="text-sm leading-relaxed">
+                      {formatCheatSheetItem(item)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
@@ -347,6 +357,21 @@ function ExplanationContent({ content }: { content: string }) {
   flushParagraph();
 
   return <>{elements}</>;
+}
+
+/** Formats cheat sheet items: code in backticks gets terminal-style highlighting, rest is muted text */
+function formatCheatSheetItem(text: string): React.ReactNode[] {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code key={i} className="text-[#e5c07b] font-mono bg-[#2c313a] px-1.5 py-0.5 rounded text-[13px]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <span key={i} className="text-[#abb2bf]/80">{part}</span>;
+  });
 }
 
 function formatInlineCode(text: string): React.ReactNode[] {
