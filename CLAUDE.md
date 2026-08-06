@@ -1,69 +1,160 @@
-# React Cert Quiz — Guía del Proyecto
+# React Cert Quiz — Project Guide
 
-## Stack
-- Next.js 15+ (App Router) + React 19 + TypeScript strict
-- Tailwind CSS v4 + shadcn/ui (Radix UI) + lucide-react
-- Animaciones: framer-motion (respetar prefers-reduced-motion)
-- Syntax highlighting: shiki
-- Tests: Vitest + Testing Library
-- Package manager: pnpm
+## Role & Expertise
 
-## Comandos
+You are a senior web developer with deep expertise in:
+- **TypeScript** (strict mode, zero `any`, generics, branded types)
+- **React 19** (Server Components, hooks rules, useSyncExternalStore, useMemo derivations)
+- **Next.js 15+ App Router** (SSG with generateStaticParams, layouts, metadata API)
+- **Tailwind CSS v4** (oklch color system, mobile-first responsive design)
+- **shadcn/ui** (Radix primitives, composable components)
+- **framer-motion** (animations: flip, collapse, fade, spring)
+- **UX/UI** (modern typography like Scrimba.com, generous spacing, clear visual hierarchy)
+- **Pedagogy** (real-world analogies as primary teaching tool, SRS/SM-2 algorithm)
+
+---
+
+## Project Overview
+
+Interactive study app for developer certifications. Currently configured for **Junior React Developer**, but designed to be reusable for any certification or programming language.
+
+### Tech Stack
+- Next.js 15+ App Router (SSG, no SSR)
+- React 19 with TypeScript strict
+- Tailwind CSS v4 (oklch, hue 265 violet/blue)
+- shadcn/ui (Radix) + framer-motion
+- Zod v4 for localStorage validation
+- No backend, no DB, no auth — fully client-side with localStorage
+- pnpm as package manager
+- Vitest for testing
+
+---
+
+## Commands
+
 ```bash
-pnpm dev          # servidor de desarrollo
-pnpm build        # build de producción
+pnpm dev          # development server
+pnpm build        # production build
 pnpm lint         # eslint
 pnpm test         # vitest run
 pnpm test:watch   # vitest watch mode
 ```
 
-## Convenciones de Código
-- Componentes: nombres en inglés, PascalCase
-- Textos de UI: español, centralizados en `src/lib/i18n/es.ts`
-- Server Components por defecto; `'use client'` solo donde hay interactividad
-- Cero `any`, cero `@ts-ignore`, cero `console.log` en producción
-- Lógica de dominio en funciones puras en `src/lib/`
-- Tests mínimo para: SRS, scoring, utils de progreso, validateTopics()
+---
 
-## Estructura
+## Architecture
+
 ```
 src/
-  app/              # /, /temas/[slug], /flashcards, /quiz, /examen, /glosario, /analogias, /progreso
-  components/       # ui/ (shadcn), study/, quiz/, flashcards/, layout/
-  content/          # types.ts, validate.ts, topics/*.ts, glossary.ts, index.ts (registry)
-  lib/              # srs.ts, scoring.ts, shuffle.ts, storage.ts, hooks/, i18n/
-  tests/
+├── config/course.ts        ← Central course config (badge, techLabel, exam defaults, storagePrefix, hue)
+├── content/
+│   ├── types.ts            ← Topic, Flashcard, QuizQuestion, RealWorldAnalogy, KeyTerm, CodeExample
+│   ├── index.ts            ← Topic registry (all topics imported here)
+│   ├── validate.ts         ← Build-time validation (analogies, flashcards, quiz)
+│   └── topics/             ← 8 topic files (state, hooks, jsx, etc.)
+├── lib/
+│   ├── srs.ts              ← SM-2 algorithm (createNewSRSCard, reviewCard, isDue, getDueCards)
+│   ├── scoring.ts          ← calculateScore, isPassing, getWeakTopics
+│   ├── shuffle.ts          ← seededShuffle (LCG + Fisher-Yates)
+│   ├── hooks/
+│   │   ├── use-persistent-state.ts  ← Generic localStorage hook + Zod + storagePrefix from course config
+│   │   └── use-srs-state.ts         ← SRS state connecting SM-2 to localStorage
+│   └── i18n/es.ts          ← Spanish UI strings (imports course config for dynamic values)
+├── components/
+│   ├── layout/             ← AppHeader, ThemeProvider (useSyncExternalStore), CommandPalette (Cmd+K)
+│   ├── study/              ← TopicView, AnalogyCard, CodeBlock
+│   ├── flashcards/         ← FlashcardDeck (flip animation, keyboard shortcuts, SRS rating)
+│   └── quiz/               ← QuizEngine, QuizResults, ExamTimer
+├── app/
+│   ├── page.tsx            ← Home (hero, stats, recommended action, topic list)
+│   ├── temas/              ← Topic list + [slug] with SSG
+│   ├── flashcards/         ← Topic selector + FlashcardDeck
+│   ├── quiz/               ← Selector + QuizEngine
+│   ├── examen/             ← Exam simulator (timer, navigator, flag for review)
+│   ├── glosario/           ← Search/filter KeyTerms
+│   ├── analogias/          ← Scroll view of all analogies
+│   └── progreso/           ← Export/Import JSON + Reset
+└── tests/                  ← srs.test.ts, scoring.test.ts, validate.test.ts (18 tests)
 ```
 
-## Reglas para Ejemplos de la Vida Real (Analogías)
-1. Uno por tema, obligatorio — el proyecto NO compila sin él
-2. Usar objetos/lugares/situaciones universales (filas, restaurantes, llaves, etc.)
-3. Cero jerga técnica en el `scenario`; la jerga vive solo en `mapping`
-4. `mapping`: mínimo 2, máximo 6 pares
-5. Incluir `whereItBreaks` cuando la analogía pueda generar misconceptions
-6. Reutilizar el mismo mundo si temas se relacionan
-7. La analogía debe reaparecer en: explanation + ≥1 flashcard + ≥1 quiz
-8. Máximo 4 líneas el scenario. Si hay que explicar la analogía, es mala
-9. Cero referencias culturales locales o marcas
-10. Prohibido usar analogías de programación para explicar programación
+---
 
-## Modelo de Contenido
-- `realWorldAnalogy` es OBLIGATORIO (no optional)
-- Todo `QuizQuestion` tiene `explanation` + `whyOthersAreWrong` por distractor
-- Cada `KeyTerm` tiene `analogyHint` (≤15 palabras, cotidiano)
-- Test `validateTopics()` falla si falta analogía o mapping < 2
+## Language Rules
 
-## Persistencia
-- localStorage via hook `usePersistentState<T>()`
-- Validación con Zod, versionado de schema (v1)
-- No rompe con storage vacío o corrupto
+- **All code is in English**: variables, functions, components, types, interfaces, comments, commit messages, file names.
+- **UI-facing content is in Spanish**: strings in `src/lib/i18n/es.ts`, topic content (explanations, flashcards, quiz questions, analogies).
+- **Technical terms** (useState, props, hooks, component, etc.) stay in English even within Spanish content.
+- **Commits**: always in English, short, descriptive. Never push without explicit permission.
+
+---
+
+## Development Rules
+
+1. **Every topic MUST have a real-world analogy** as the primary teaching tool. `validateTopics()` enforces this at build time.
+2. **Content/UI separation** — data lives in typed TypeScript, UI is generic and reusable.
+3. **To switch certification**: only modify `src/config/course.ts` + topics in `src/content/topics/` + registry in `src/content/index.ts`.
+4. **Mobile-first responsive** — everything must look good at 375px+. Use `sm:` breakpoint for desktop upgrades.
+5. **Typography**: Inter 17px base, line-height 1.6, letter-spacing -0.011em. Headings tight (-0.025em). JetBrains Mono for code.
+6. **Never use `any`**. Never use `useEffect` to sync derived state (use `useMemo`). Never use `useState`+`useEffect` for external state (use `useSyncExternalStore`).
+7. **Do not add unrequested features**, do not refactor unrelated code, do not add unnecessary comments/docstrings.
+8. **localStorage** uses versioned prefix from course config (`rcq_v1_`), Zod validation, and fails gracefully if corrupt.
+9. **Accessibility**: aria-labels, keyboard navigation (Space flip, 1-4 rate/select, Enter confirm, Cmd+K search).
+10. **After every change**: verify `pnpm build` passes. Run `pnpm test` if touching `lib/` or `content/`.
+11. **Git**: `git add` specific files + `git commit` after each significant change. Never push without permission. Never amend without permission.
+
+---
+
+## Visual Style
+
+- Modern design inspired by Scrimba.com — large readable typography, generous whitespace
+- oklch palette with hue 265 (violet/blue), chart-2 and chart-3 for accents
+- Cards: `border-border/60`, `glow-sm` on hover, `rounded-xl`
+- Subtle gradients: `from-primary/[0.06] via-primary/[0.03]`
+- Full dark mode via oklch CSS variables
+- Responsive: reduce padding/sizes on mobile, hide non-essential elements with `hidden sm:flex`
+
+---
+
+## Solved Problems (Do Not Repeat)
+
+- **React 19 lint `react-hooks/set-state-in-effect`** → use `useMemo` for derived state, `useSyncExternalStore` for external state (theme, etc.)
+- **`prefer-const` in srs.ts** → always use `const` when variable is not reassigned
+- **Horizontal overflow on mobile** → `overflow-x-hidden` on body, `truncate` + `min-w-0` + `shrink-0` on flex items, long text hidden/shortened on mobile with `hidden sm:inline`
+- **Unused imports** → clean up before commit (causes build failure)
+
+---
+
+## Real-World Analogy Rules
+
+1. One per topic, mandatory — project does NOT compile without it
+2. Use universal objects/places/situations (queues, restaurants, keys, etc.)
+3. Zero technical jargon in `scenario`; jargon lives only in `mapping`
+4. `mapping`: minimum 2, maximum 6 pairs
+5. Include `whereItBreaks` when the analogy could generate misconceptions
+6. Reuse the same world if topics are related
+7. The analogy must reappear in: explanation + ≥1 flashcard + ≥1 quiz question
+8. Maximum 4 lines for scenario. If you need to explain the analogy, it's bad
+9. Zero local cultural references or brands
+10. Never use programming analogies to explain programming
+
+---
+
+## Content Model
+
+- `realWorldAnalogy` is REQUIRED (not optional)
+- Every `QuizQuestion` has `explanation` + `whyOthersAreWrong` per distractor
+- Every `KeyTerm` has `analogyHint` (≤15 words, everyday language)
+- Test `validateTopics()` fails if analogy is missing or mapping < 2
+
+---
 
 ## Definition of Done
-- pnpm dev/build/lint/test sin errores ni warnings
-- Cero `any`, cero errores TS
-- Todos los temas con realWorldAnalogy válida
-- Cada tema retoma analogía en explanation, ≥1 flashcard, ≥1 quiz
-- Funciona con localStorage vacío y datos corruptos
-- Navegable 100% con teclado
-- Responsive (mobile first)
-- Dark mode por defecto + light mode
+
+- `pnpm dev/build/lint/test` with zero errors and zero warnings
+- Zero `any`, zero TS errors
+- All topics with valid `realWorldAnalogy`
+- Each topic reuses analogy in explanation, ≥1 flashcard, ≥1 quiz
+- Works with empty localStorage and corrupt data
+- 100% keyboard navigable
+- Responsive (mobile first, no horizontal overflow)
+- Dark mode by default + light mode toggle
