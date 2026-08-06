@@ -1,69 +1,146 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { ArrowRight, BookOpen, Brain, Trophy, Clock, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { topics } from '@/content/index';
+import { es } from '@/lib/i18n/es';
 
-export default function Home() {
+export default function HomePage() {
+  const totalTopics = topics.length;
+  const totalFlashcards = topics.reduce((sum, t) => sum + t.flashcards.length, 0);
+  const totalQuiz = topics.reduce((sum, t) => sum + t.quiz.length, 0);
+  const totalMinutes = topics.reduce((sum, t) => sum + t.estimatedMinutes, 0);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="space-y-12">
+      {/* Hero */}
+      <section className="text-center space-y-5 pt-10 pb-6">
+        <Badge variant="secondary" className="text-sm font-medium px-4 py-1.5">
+          Junior React Developer
+        </Badge>
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-gradient">
+          {es.dashboard.welcome}
+        </h1>
+        <p className="text-muted-foreground text-xl max-w-xl mx-auto leading-relaxed">
+          {totalTopics} temas · {totalFlashcards} flashcards · {totalQuiz} preguntas con explicaciones detalladas
+        </p>
+        <div className="flex items-center justify-center gap-2 text-base text-muted-foreground">
+          <Clock className="h-5 w-5" />
+          <span>{totalMinutes} minutos de contenido estimado</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Stats grid */}
+      <section className="grid gap-5 sm:grid-cols-3">
+        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                <BookOpen className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-4xl font-bold">{totalTopics}</span>
+            </div>
+            <p className="text-base text-muted-foreground mt-3">Temas con analogías</p>
+          </CardContent>
+        </Card>
+
+        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="h-12 w-12 rounded-xl bg-chart-2/10 flex items-center justify-center group-hover:bg-chart-2/15 transition-colors">
+                <Brain className="h-6 w-6 text-chart-2" />
+              </div>
+              <span className="text-4xl font-bold">{totalFlashcards}</span>
+            </div>
+            <p className="text-base text-muted-foreground mt-3">Flashcards con SRS</p>
+          </CardContent>
+        </Card>
+
+        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="h-12 w-12 rounded-xl bg-chart-3/10 flex items-center justify-center group-hover:bg-chart-3/15 transition-colors">
+                <Trophy className="h-6 w-6 text-chart-3" />
+              </div>
+              <span className="text-4xl font-bold">{totalQuiz}</span>
+            </div>
+            <p className="text-base text-muted-foreground mt-3">Preguntas de quiz</p>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Recommended action */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {es.dashboard.nextAction}
+          </h2>
         </div>
-      </main>
+        <Link href={`/temas/${topics[0].id}`}>
+          <Card className="group hover:border-primary/40 hover:glow-sm transition-all duration-300 cursor-pointer border-border/60">
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="space-y-1.5">
+                <p className="text-lg font-semibold group-hover:text-primary transition-colors">
+                  {topics[0].title}
+                </p>
+                <p className="text-base text-muted-foreground">
+                  {topics[0].estimatedMinutes} min · {topics[0].flashcards.length} flashcards · {topics[0].quiz.length} preguntas
+                </p>
+              </div>
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:translate-x-0.5 transition-all">
+                <ArrowRight className="h-5 w-5 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </section>
+
+      {/* Topic list preview */}
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Todos los temas
+        </h2>
+        <div className="grid gap-2">
+          {topics.map((topic, idx) => (
+            <Link key={topic.id} href={`/temas/${topic.id}`}>
+              <div className="group flex items-center gap-4 p-4 rounded-xl hover:bg-accent/50 transition-colors">
+                <span className="text-sm font-mono text-muted-foreground w-6 text-right">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-medium truncate group-hover:text-primary transition-colors">
+                    {topic.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {topic.realWorldAnalogy.title}
+                  </p>
+                </div>
+                <Badge variant="secondary" className="text-xs shrink-0">
+                  {es.difficulty[topic.difficulty]}
+                </Badge>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="flex flex-col sm:flex-row justify-center gap-3 pb-8">
+        <Link href="/temas">
+          <Button size="lg" className="w-full sm:w-auto gap-2 shadow-md">
+            <BookOpen className="h-4 w-4" />
+            Estudiar temas
+          </Button>
+        </Link>
+        <Link href="/quiz">
+          <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2">
+            <Trophy className="h-4 w-4" />
+            Practicar quiz
+          </Button>
+        </Link>
+      </section>
     </div>
   );
 }
