@@ -11,6 +11,7 @@ const STORAGE_PREFIX = course.storagePrefix;
  * - Prefijo versionado para migraciones seguras
  * - No rompe si localStorage está vacío o corrupto
  * - Hidratación segura: siempre inicia con defaultValue, lee localStorage en useEffect
+ * - Solo persiste cambios del USUARIO (nunca sobreescribe con defaultValue en mount)
  */
 export function usePersistentState<T>(
   key: string,
@@ -19,7 +20,7 @@ export function usePersistentState<T>(
 ): [T, (value: T | ((prev: T) => T)) => void, () => void] {
   const storageKey = `${STORAGE_PREFIX}${key}`;
   const [state, setState] = useState<T>(defaultValue);
-  const hydrated = useRef(false);
+  const shouldPersist = useRef(false);
 
   // Read from localStorage after hydration (client only)
   useEffect(() => {
@@ -35,12 +36,15 @@ export function usePersistentState<T>(
     } catch {
       // localStorage unavailable or corrupt — keep default
     }
-    hydrated.current = true;
+    // Enable persistence AFTER the next render (so the hydration setState doesn't trigger a write)
+    requestAnimationFrame(() => {
+      shouldPersist.current = true;
+    });
   }, [storageKey, schema]);
 
-  // Persist to localStorage on state changes (skip initial hydration read)
+  // Persist to localStorage — only after hydration + initial setState settled
   useEffect(() => {
-    if (!hydrated.current) return;
+    if (!shouldPersist.current) return;
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
     } catch {
