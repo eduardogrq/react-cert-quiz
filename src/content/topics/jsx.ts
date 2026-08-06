@@ -306,4 +306,26 @@ La **key** le dice a React cuál es cuál para no recrear todo cuando la lista c
   estimatedMinutes: 18,
   prerequisites: ['javascript-es6'],
   tags: ['jsx', 'fragment', 'conditional-rendering', 'lists', 'key', 'expressions'],
+  codeChallenge: {
+    instruction: 'Renderiza una lista de frutas usando .map() con la prop key correcta.',
+    template: `const fruits = ['Manzana', 'Plátano', 'Naranja'];
+
+function FruitList() {
+  return (
+    <{{element}}>
+      {fruits.{{method}}((fruit) => (
+        <li {{key_prop}}={{{key_value}}}>{fruit}</li>
+      ))}
+    </{{element}}>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      { id: 'element', answers: ['ul', 'ol'], placeholder: 'tag' },
+      { id: 'method', answers: ['map'], placeholder: '???' },
+      { id: 'key_prop', answers: ['key'], placeholder: 'prop' },
+      { id: 'key_value', answers: ['fruit', '{fruit}'], placeholder: 'valor' },
+    ],
+    hint: 'Cada elemento en una lista necesita una prop "key" única. Puedes usar el valor del item si es único.',
+  },
 };

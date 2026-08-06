@@ -359,4 +359,26 @@ setItems(items.map(item => item.id === id ? { ...item, done: true } : item));
   estimatedMinutes: 20,
   prerequisites: ['javascript-es6'],
   tags: ['state', 'useState', 'hooks', 'inmutabilidad', 'rendering'],
+  codeChallenge: {
+    instruction: 'Crea un contador con useState que incremente al hacer clic.',
+    template: `import { {{hook}} } from 'react';
+
+function Counter() {
+  const [{{state_var}}, {{setter}}] = useState({{initial}});
+
+  return (
+    <button onClick={() => {{setter}}({{state_var}} + 1)}>
+      Clicks: {{{state_var}}}
+    </button>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      { id: 'hook', answers: ['useState'], placeholder: 'hook' },
+      { id: 'state_var', answers: ['count', 'counter', 'clicks'], placeholder: 'variable' },
+      { id: 'setter', answers: ['setCount', 'setCounter', 'setClicks'], placeholder: 'setter' },
+      { id: 'initial', answers: ['0'], placeholder: 'valor' },
+    ],
+    hint: 'useState devuelve un array con [valor, función setter]. La convención es set + NombreVariable.',
+  },
 };

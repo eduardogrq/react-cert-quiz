@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode, Code2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { AnalogyCard } from './AnalogyCard';
 import { CodeBlock } from './CodeBlock';
+import { CodeChallengeBlock } from './CodeChallengeBlock';
 import { es } from '@/lib/i18n/es';
 import type { Topic } from '@/content/types';
 
@@ -142,7 +143,15 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
           </section>
         )}
 
-        {/* 6. Pitfalls */}
+        {/* 6. Code Challenge */}
+        {topic.codeChallenge && (
+          <section aria-labelledby="challenge-heading" className="space-y-4">
+            <SectionHeading id="challenge-heading" icon={Code2} title={es.study.codeChallenge} />
+            <CodeChallengeBlock challenge={topic.codeChallenge} />
+          </section>
+        )}
+
+        {/* 7. Pitfalls */}
         <section aria-labelledby="pitfalls-heading" className="space-y-4">
           <SectionHeading id="pitfalls-heading" icon={AlertTriangle} title={es.study.pitfalls} />
           <Card className="border-destructive/15 bg-destructive/[0.03]">

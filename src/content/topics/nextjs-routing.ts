@@ -519,4 +519,34 @@ export default async function PhotoModal({
     'intercepting-routes',
     'layouts',
   ],
+  codeChallenge: {
+    instruction: 'Completa la estructura de un layout con children y una ruta dinámica.',
+    template: `// app/layout.tsx
+export default function RootLayout({
+  {{prop}},
+}: {
+  {{prop}}: React.ReactNode;
+}) {
+  return (
+    <html>
+      <body>{{{prop}}}</body>
+    </html>
+  );
+}
+
+// app/blog/[{{param}}]/page.tsx
+export default function BlogPost({
+  params,
+}: {
+  params: { {{param}}: string };
+}) {
+  return <h1>Post: {params.{{param}}}</h1>;
+}`,
+    language: 'tsx',
+    blanks: [
+      { id: 'prop', answers: ['children'], placeholder: 'prop' },
+      { id: 'param', answers: ['slug', 'id'], placeholder: 'param' },
+    ],
+    hint: 'Los layouts reciben children como prop. Las rutas dinámicas usan [nombreParam] en la carpeta.',
+  },
 };

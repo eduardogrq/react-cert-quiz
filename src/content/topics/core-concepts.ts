@@ -268,4 +268,21 @@ const element = React.createElement(
   difficulty: 'basico',
   estimatedMinutes: 15,
   tags: ['createRoot', 'createElement', 'react-element', 'virtual-dom', 'render'],
+  codeChallenge: {
+    instruction: 'Completa el código para montar una aplicación React en el DOM.',
+    template: `import { {{import_fn}} } from 'react-dom/client';
+import App from './App';
+
+const container = document.getElementById('{{root_id}}');
+const root = {{create_call}}(container);
+root.{{render_method}}(<App />);`,
+    language: 'tsx',
+    blanks: [
+      { id: 'import_fn', answers: ['createRoot'], placeholder: '???' },
+      { id: 'root_id', answers: ['root', '"root"', "'root'"], placeholder: '???' },
+      { id: 'create_call', answers: ['createRoot'], placeholder: '???' },
+      { id: 'render_method', answers: ['render'], placeholder: '???' },
+    ],
+    hint: 'React 18+ usa createRoot en lugar de ReactDOM.render para montar la aplicación.',
+  },
 };

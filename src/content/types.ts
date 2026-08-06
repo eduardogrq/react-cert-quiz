@@ -57,6 +57,27 @@ export interface QuizQuestion {
   usesAnalogy?: boolean;
 }
 
+export interface CodeChallengeBlank {
+  /** ID único del blank dentro del challenge */
+  id: string;
+  /** Respuesta(s) correcta(s) — acepta múltiples variaciones */
+  answers: string[];
+  /** Placeholder que se muestra en el input */
+  placeholder?: string;
+}
+
+export interface CodeChallenge {
+  /** Instrucción breve del ejercicio */
+  instruction: string;
+  /** Código con marcadores {{blank_id}} donde van los inputs */
+  template: string;
+  language: 'tsx' | 'ts' | 'jsx' | 'js';
+  /** Definición de cada blank */
+  blanks: CodeChallengeBlank[];
+  /** Pista opcional (se revela con botón) */
+  hint?: string;
+}
+
 export interface Topic {
   id: string;
   /** Course this topic belongs to */
@@ -82,4 +103,6 @@ export interface Topic {
   /** IDs de temas prerequisito */
   prerequisites?: string[];
   tags: string[];
+  /** Ejercicio interactivo de completar código */
+  codeChallenge?: CodeChallenge;
 }

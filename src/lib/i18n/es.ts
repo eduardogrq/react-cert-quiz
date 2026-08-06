@@ -26,6 +26,7 @@ export const es = {
     codeExamples: 'Ejemplos de código',
     pitfalls: 'Trampas del examen',
     cheatSheet: 'Cheat Sheet',
+    codeChallenge: 'Ponte a prueba',
     markAsReviewed: 'Marcar como repasado',
     reviewed: 'Repasado',
     estimatedTime: 'min estimados',
