@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookOpen, Brain, Trophy } from 'lucide-react';
+import { BookOpen, Brain, Trophy, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { staggerContainer, scaleIn, hoverLift } from '@/lib/motion';
 
@@ -9,9 +9,10 @@ interface HomeCardsProps {
   totalTopics: number;
   totalFlashcards: number;
   totalQuiz: number;
+  completedTopics?: number;
 }
 
-export function HomeCards({ totalTopics, totalFlashcards, totalQuiz }: HomeCardsProps) {
+export function HomeCards({ totalTopics, totalFlashcards, totalQuiz, completedTopics = 0 }: HomeCardsProps) {
   return (
     <motion.section
       variants={staggerContainer}
@@ -25,12 +26,18 @@ export function HomeCards({ totalTopics, totalFlashcards, totalQuiz }: HomeCards
           <CardContent className="p-3 sm:p-6">
             <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2">
               <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                {completedTopics > 0 ? (
+                  <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+                ) : (
+                  <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                )}
               </div>
-              <span className="text-2xl sm:text-4xl font-bold">{totalTopics}</span>
+              <span className="text-2xl sm:text-4xl font-bold">
+                {completedTopics > 0 ? `${completedTopics}/${totalTopics}` : totalTopics}
+              </span>
             </div>
             <p className="text-xs sm:text-base text-muted-foreground mt-2 sm:mt-3 text-center sm:text-left">
-              Temas con analogías
+              {completedTopics > 0 ? 'Temas completados' : 'Temas con analogías'}
             </p>
           </CardContent>
         </Card>

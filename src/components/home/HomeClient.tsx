@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Trophy, Clock, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Trophy, Clock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { z } from 'zod/v4';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,14 +12,26 @@ import { AnimatedList, AnimatedItem } from '@/components/layout/AnimatedList';
 import { HomeCards } from '@/components/home/HomeCards';
 import { CourseSelector } from '@/components/layout/CourseSelector';
 import { useSelectedCourse } from '@/lib/hooks/use-selected-course';
+import { usePersistentState } from '@/lib/hooks/use-persistent-state';
+
+const reviewedSchema = z.record(z.string(), z.boolean());
 
 export function HomeClient() {
   const { courseId, setCourseId, course, courseTopics } = useSelectedCourse();
+  const [reviewed] = usePersistentState(
+    'reviewed_topics',
+    {} as Record<string, boolean>,
+    reviewedSchema
+  );
 
   const totalTopics = courseTopics.length;
   const totalFlashcards = courseTopics.reduce((sum, t) => sum + t.flashcards.length, 0);
   const totalQuiz = courseTopics.reduce((sum, t) => sum + t.quiz.length, 0);
   const totalMinutes = courseTopics.reduce((sum, t) => sum + t.estimatedMinutes, 0);
+  const completedCount = courseTopics.filter((t) => reviewed[t.id]).length;
+
+  // Next recommended topic: first non-completed topic
+  const nextTopic = courseTopics.find((t) => !reviewed[t.id]) ?? courseTopics[0];
 
   return (
     <PageTransition className="space-y-8 sm:space-y-12">
@@ -49,10 +62,11 @@ export function HomeClient() {
         totalTopics={totalTopics}
         totalFlashcards={totalFlashcards}
         totalQuiz={totalQuiz}
+        completedTopics={completedCount}
       />
 
       {/* Recommended action */}
-      {courseTopics.length > 0 && (
+      {nextTopic && (
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -60,15 +74,15 @@ export function HomeClient() {
               {es.dashboard.nextAction}
             </h2>
           </div>
-          <Link href={`/temas/${courseTopics[0].id}`}>
+          <Link href={`/temas/${nextTopic.id}`}>
             <Card className="group hover:border-primary/40 hover:glow-sm transition-all duration-300 cursor-pointer border-border/60">
               <CardContent className="flex items-center justify-between gap-3 p-4 sm:p-6">
                 <div className="space-y-1 min-w-0">
                   <p className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors truncate">
-                    {courseTopics[0].title}
+                    {nextTopic.title}
                   </p>
                   <p className="text-sm sm:text-base text-muted-foreground truncate">
-                    {courseTopics[0].estimatedMinutes} min · {courseTopics[0].flashcards.length} flashcards · {courseTopics[0].quiz.length} preguntas
+                    {nextTopic.estimatedMinutes} min · {nextTopic.flashcards.length} flashcards · {nextTopic.quiz.length} preguntas
                   </p>
                 </div>
                 <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:translate-x-0.5 transition-all">
@@ -82,32 +96,55 @@ export function HomeClient() {
 
       {/* Topic list preview */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Temas del curso
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Temas del curso
+          </h2>
+          {completedCount > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {completedCount}/{totalTopics} completados
+            </span>
+          )}
+        </div>
         <AnimatedList className="grid gap-2">
-          {courseTopics.map((topic, idx) => (
-            <AnimatedItem key={topic.id}>
-              <Link href={`/temas/${topic.id}`}>
-                <div className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-accent/50 transition-colors">
-                  <span className="text-xs sm:text-sm font-mono text-muted-foreground w-5 sm:w-6 text-right shrink-0">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm sm:text-base font-medium truncate group-hover:text-primary transition-colors">
-                      {topic.title}
-                    </p>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {topic.realWorldAnalogy.title}
-                    </p>
+          {courseTopics.map((topic, idx) => {
+            const isCompleted = reviewed[topic.id] ?? false;
+            return (
+              <AnimatedItem key={topic.id}>
+                <Link href={`/temas/${topic.id}`}>
+                  <div className={`group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl transition-colors ${isCompleted ? 'bg-green-500/[0.04] hover:bg-green-500/[0.08]' : 'hover:bg-accent/50'}`}>
+                    {/* Number or check */}
+                    <span className="w-5 sm:w-6 flex justify-center shrink-0">
+                      {isCompleted ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <span className="text-xs sm:text-sm font-mono text-muted-foreground">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                      )}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm sm:text-base font-medium truncate transition-colors ${isCompleted ? 'text-foreground/70' : 'group-hover:text-primary'}`}>
+                        {topic.title}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                        {topic.realWorldAnalogy.title}
+                      </p>
+                    </div>
+                    {isCompleted ? (
+                      <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0 bg-green-500/10 text-green-600 border-green-500/20">
+                        Completado
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0">
+                        {es.difficulty[topic.difficulty]}
+                      </Badge>
+                    )}
                   </div>
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0">
-                    {es.difficulty[topic.difficulty]}
-                  </Badge>
-                </div>
-              </Link>
-            </AnimatedItem>
-          ))}
+                </Link>
+              </AnimatedItem>
+            );
+          })}
         </AnimatedList>
       </section>
 
