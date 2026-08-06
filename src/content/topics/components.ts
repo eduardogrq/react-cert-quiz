@@ -332,4 +332,21 @@ function Alert({ message, type = 'info', onDismiss }: AlertProps) {
   estimatedMinutes: 18,
   prerequisites: ['jsx'],
   tags: ['components', 'props', 'children', 'composition', 'export', 'import'],
+  codeChallenge: {
+    instruction: 'Crea un componente que reciba props y renderice un saludo personalizado.',
+    template: `{{keyword}} Greeting({{ params }}) {
+  return <{{tag}}>Hello, {props.{{prop}}}!</{{tag}}>;
+}
+
+{{export_kw}} default Greeting;`,
+    language: 'tsx',
+    blanks: [
+      { id: 'keyword', answers: ['function'], placeholder: 'declaración' },
+      { id: 'params', answers: ['props', '{ name }'], placeholder: 'parámetro' },
+      { id: 'tag', answers: ['h1', 'p', 'span', 'div'], placeholder: 'etiqueta' },
+      { id: 'prop', answers: ['name'], placeholder: 'propiedad' },
+      { id: 'export_kw', answers: ['export'], placeholder: 'exportar' },
+    ],
+    hint: 'Un componente es una función que recibe props (un objeto) y retorna JSX. Se exporta para usarlo en otros archivos.',
+  },
 };

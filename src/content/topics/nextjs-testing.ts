@@ -418,4 +418,53 @@ export async function createUser(formData: FormData) {
     'observability',
     'next.js',
   ],
+  codeChallenge: {
+    instruction: 'Completa el unit test con Vitest y el componente error.tsx para manejo de errores.',
+    template: `// Unit test
+import { render, screen } from '@testing-library/react';
+import { {{expect_fn}}, {{test_fn}} } from 'vitest';
+import { UserGreeting } from './UserGreeting';
+
+{{test_fn}}('muestra el nombre del usuario', () => {
+  render(<UserGreeting name="Ana" />);
+  {{expect_fn}}(screen.getByText('Hola, Ana')).toBeInTheDocument();
+});
+
+// error.tsx
+'use client';
+
+export default function Error({
+  error,
+  {{reset_prop}},
+}: {
+  error: Error & { digest?: string };
+  {{reset_prop}}: () => void;
+}) {
+  return (
+    <div role="alert">
+      <h2>Algo salió mal</h2>
+      <button onClick={() => {{reset_prop}}()}>Intentar de nuevo</button>
+    </div>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'expect_fn',
+        answers: ['expect'],
+        placeholder: 'función de aserción',
+      },
+      {
+        id: 'test_fn',
+        answers: ['test', 'it'],
+        placeholder: 'función de test',
+      },
+      {
+        id: 'reset_prop',
+        answers: ['reset'],
+        placeholder: 'prop para reintentar',
+      },
+    ],
+    hint: 'Vitest usa expect para aserciones y test/it para definir casos. El error.tsx recibe reset para reintentar el renderizado.',
+  },
 };

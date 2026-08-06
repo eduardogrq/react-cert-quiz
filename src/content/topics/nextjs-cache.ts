@@ -611,4 +611,45 @@ export async function POST(request: NextRequest) {
     'performance',
     'stale-while-revalidate',
   ],
+  codeChallenge: {
+    instruction: 'Completa una función cacheada con "use cache", asignando un tiempo de vida y una etiqueta para invalidación selectiva.',
+    template: `import { {{cache_life}}, {{cache_tag}} } from 'next/cache';
+
+async function getProducts() {
+  '{{directive}}';
+  {{cache_life}}('hours');
+  {{cache_tag}}('products');
+
+  const res = await fetch('https://api.example.com/products');
+  return res.json();
+}
+
+// Para invalidar manualmente:
+// import { {{revalidate}} } from 'next/cache';
+// {{revalidate}}('products');`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'cache_life',
+        answers: ['cacheLife'],
+        placeholder: 'función de duración del cache',
+      },
+      {
+        id: 'cache_tag',
+        answers: ['cacheTag'],
+        placeholder: 'función de etiqueta del cache',
+      },
+      {
+        id: 'directive',
+        answers: ['use cache'],
+        placeholder: 'directiva para cachear',
+      },
+      {
+        id: 'revalidate',
+        answers: ['revalidateTag'],
+        placeholder: 'función para invalidar por etiqueta',
+      },
+    ],
+    hint: '"use cache" marca la función como cacheable. cacheLife define cuánto dura, cacheTag le pone una etiqueta, y revalidateTag la invalida.',
+  },
 };

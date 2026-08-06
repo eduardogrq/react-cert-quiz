@@ -450,4 +450,54 @@ export default function DashboardPage() {
   difficulty: 'intermedio',
   estimatedMinutes: 20,
   tags: ['next.js', 'navigation', 'Link', 'useRouter', 'prefetching', 'streaming', 'redirect', 'App Router'],
+  codeChallenge: {
+    instruction: 'Completa el componente de navegación programática usando useRouter y los hooks de lectura de URL.',
+    template: `'use client';
+
+import { {{router_hook}}, usePathname, {{search_hook}} } from '{{import_path}}';
+
+export function SearchForm() {
+  const router = {{router_hook}}();
+  const pathname = usePathname();
+  const searchParams = {{search_hook}}();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get('q') as string;
+    router.{{navigate_method}}(\`/buscar?q=\${encodeURIComponent(query)}\`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="q" defaultValue={searchParams.get('q') ?? ''} />
+      <button type="submit">Buscar</button>
+    </form>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'router_hook',
+        answers: ['useRouter'],
+        placeholder: 'hook de router',
+      },
+      {
+        id: 'search_hook',
+        answers: ['useSearchParams'],
+        placeholder: 'hook de params',
+      },
+      {
+        id: 'import_path',
+        answers: ['next/navigation'],
+        placeholder: 'módulo de importación',
+      },
+      {
+        id: 'navigate_method',
+        answers: ['push'],
+        placeholder: 'método de navegación',
+      },
+    ],
+    hint: 'En App Router, todos los hooks de navegación se importan de next/navigation. El método push agrega una entrada al historial.',
+  },
 };

@@ -422,4 +422,44 @@ export async function GET(request: Request) {
   difficulty: 'intermedio',
   estimatedMinutes: 25,
   tags: ['next.js', 'app-router', 'server-components', 'client-components', 'architecture', 'hydration', 'rsc'],
+  codeChallenge: {
+    instruction: 'Completa la estructura de App Router: un layout de servidor y un Client Component interactivo con la directiva correcta.',
+    template: `// app/layout.tsx (Server Component por defecto)
+export default function RootLayout({ {{children}} }: { {{children}}: React.ReactNode }) {
+  return (
+    <html>
+      <body>{{{children}}}</body>
+    </html>
+  );
+}
+
+// app/components/Counter.tsx
+'{{directive}}';
+
+import { {{use_state}} } from 'react';
+
+export function Counter() {
+  const [count, setCount] = {{use_state}}(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'children',
+        answers: ['children'],
+        placeholder: 'prop de contenido hijo',
+      },
+      {
+        id: 'directive',
+        answers: ['use client'],
+        placeholder: 'directiva para componente interactivo',
+      },
+      {
+        id: 'use_state',
+        answers: ['useState'],
+        placeholder: 'hook de estado',
+      },
+    ],
+    hint: 'En App Router, todo es Server Component por defecto. Para usar hooks interactivos como useState necesitas la directiva "use client".',
+  },
 };

@@ -500,4 +500,43 @@ export async function GET(request: Request) {
     'next.js',
     'backend',
   ],
+  codeChallenge: {
+    instruction: 'Completa un Route Handler que recibe datos JSON por POST y responde con un status 201.',
+    template: `// app/api/users/route.ts
+import { {{next_response}} } from 'next/server';
+
+export async function {{method}}(request: Request) {
+  const body = await request.{{parse_body}}();
+  const { name, email } = body;
+
+  // Simular guardar en DB
+  const newUser = { id: crypto.randomUUID(), name, email };
+
+  return {{next_response}}.json(newUser, { status: {{status}} });
+}`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'next_response',
+        answers: ['NextResponse'],
+        placeholder: 'clase de respuesta de Next.js',
+      },
+      {
+        id: 'method',
+        answers: ['POST'],
+        placeholder: 'método HTTP para crear',
+      },
+      {
+        id: 'parse_body',
+        answers: ['json'],
+        placeholder: 'método para parsear el body',
+      },
+      {
+        id: 'status',
+        answers: ['201'],
+        placeholder: 'código HTTP de creación',
+      },
+    ],
+    hint: 'Los Route Handlers exportan funciones nombradas según el método HTTP. NextResponse.json() acepta datos y opciones como status.',
+  },
 };

@@ -340,4 +340,32 @@ Cambiar \`ref.current\` **nunca causa re-render** — es el casillero silencioso
   estimatedMinutes: 25,
   prerequisites: ['state'],
   tags: ['useEffect', 'useRef', 'side-effects', 'cleanup', 'dependencies', 'refs'],
+  codeChallenge: {
+    instruction: 'Completa un useEffect que se suscriba a un evento del DOM y haga cleanup al desmontar.',
+    template: `import { useEffect, {{ref_hook}} } from 'react';
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  {{effect_hook}}(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.{{add_listener}}('resize', handleResize);
+
+    return () => {
+      window.{{remove_listener}}('resize', handleResize);
+    };
+  }, [{{deps}}]);
+
+  return width;
+}`,
+    language: 'ts',
+    blanks: [
+      { id: 'ref_hook', answers: ['useState'], placeholder: 'hook' },
+      { id: 'effect_hook', answers: ['useEffect'], placeholder: 'hook' },
+      { id: 'add_listener', answers: ['addEventListener'], placeholder: 'método' },
+      { id: 'remove_listener', answers: ['removeEventListener'], placeholder: 'método' },
+      { id: 'deps', answers: [''], placeholder: 'dependencias' },
+    ],
+    hint: 'useEffect recibe una función setup que puede retornar una función cleanup. El array vacío [] significa "solo al montar/desmontar".',
+  },
 };

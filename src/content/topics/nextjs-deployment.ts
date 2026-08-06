@@ -419,4 +419,43 @@ export default nextConfig;`,
     'self-hosting',
     'adapter-api',
   ],
+  codeChallenge: {
+    instruction: 'Completa la configuración de next.config.ts para un deployment standalone con CDN y deployment ID.',
+    template: `import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  output: '{{output_mode}}',
+  {{asset_prefix_key}}: process.env.CDN_URL ?? '',
+  deploymentId: process.env.{{deployment_env_var}},
+  env: {
+    {{public_prefix}}APP_VERSION: process.env.npm_package_version ?? '0.0.0',
+  },
+};
+
+export default nextConfig;`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'output_mode',
+        answers: ['standalone'],
+        placeholder: 'modo de output',
+      },
+      {
+        id: 'asset_prefix_key',
+        answers: ['assetPrefix'],
+        placeholder: 'propiedad para CDN',
+      },
+      {
+        id: 'deployment_env_var',
+        answers: ['DEPLOYMENT_ID'],
+        placeholder: 'variable de entorno',
+      },
+      {
+        id: 'public_prefix',
+        answers: ['NEXT_PUBLIC_'],
+        placeholder: 'prefijo para exponer al cliente',
+      },
+    ],
+    hint: 'Recuerda: standalone genera un servidor autónomo, assetPrefix apunta al CDN, y NEXT_PUBLIC_ expone variables al cliente.',
+  },
 };

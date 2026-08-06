@@ -507,4 +507,30 @@ function SearchInput({ onSearch, ...inputProps }: SearchInputProps) {
   estimatedMinutes: 25,
   prerequisites: ['components', 'hooks'],
   tags: ['typescript', 'types', 'generics', 'props', 'events', 'interfaces', 'discriminated-unions'],
+  codeChallenge: {
+    instruction: 'Define una interface para las props de un componente tipado con TypeScript.',
+    template: `{{keyword}} ButtonProps {
+  label: {{string_type}};
+  onClick: () => {{void_type}};
+  disabled{{optional}}: boolean;
+}
+
+function Button({{ props_param }}: {{type_name}}) {
+  return (
+    <button onClick={props.onClick} disabled={props.disabled}>
+      {props.label}
+    </button>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      { id: 'keyword', answers: ['interface', 'type'], placeholder: 'palabra clave' },
+      { id: 'string_type', answers: ['string'], placeholder: 'tipo' },
+      { id: 'void_type', answers: ['void'], placeholder: 'tipo retorno' },
+      { id: 'optional', answers: ['?'], placeholder: 'modificador' },
+      { id: 'props_param', answers: ['props'], placeholder: 'parámetro' },
+      { id: 'type_name', answers: ['ButtonProps'], placeholder: 'tipo' },
+    ],
+    hint: 'interface define la forma de un objeto. Las propiedades opcionales llevan ? antes de los dos puntos. El componente recibe props tipadas con : NombreTipo.',
+  },
 };

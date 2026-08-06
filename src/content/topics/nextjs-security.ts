@@ -542,4 +542,51 @@ function getDBCredentials() {
   difficulty: 'avanzado',
   estimatedMinutes: 30,
   tags: ['security', 'auth', 'proxy', 'middleware', 'CSP', 'CSRF', 'XSS', 'sessions', 'next.js 16'],
+  codeChallenge: {
+    instruction: 'Completa el proxy.ts que protege rutas con autenticación y configura cookies de sesión seguras.',
+    template: `import { NextRequest, NextResponse } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const token = request.{{cookies_method}}.get('session')?.value;
+
+  if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.{{redirect_method}}(new URL('/login', request.url));
+  }
+
+  const response = NextResponse.next();
+  response.headers.set('X-Frame-Options', 'DENY');
+  return response;
+}
+
+// Configuración de cookie segura:
+// { {{http_only}}: true, secure: true, {{same_site}}: 'lax' }
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/api/:path*'],
+};`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'cookies_method',
+        answers: ['cookies'],
+        placeholder: 'acceso a cookies',
+      },
+      {
+        id: 'redirect_method',
+        answers: ['redirect'],
+        placeholder: 'método de redirección',
+      },
+      {
+        id: 'http_only',
+        answers: ['httpOnly'],
+        placeholder: 'flag anti-XSS',
+      },
+      {
+        id: 'same_site',
+        answers: ['sameSite'],
+        placeholder: 'flag anti-CSRF',
+      },
+    ],
+    hint: 'El proxy accede a cookies del request, usa redirect para enviar al login, httpOnly protege contra XSS, y sameSite protege contra CSRF.',
+  },
 };

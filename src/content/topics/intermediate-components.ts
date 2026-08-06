@@ -408,4 +408,39 @@ function Main() {
   estimatedMinutes: 20,
   prerequisites: ['components'],
   tags: ['pure-components', 'strict-mode', 'component-rules', 'ui-tree', 'idempotent', 'side-effects'],
+  codeChallenge: {
+    instruction: 'Completa este componente puro que recibe props y retorna siempre el mismo resultado. Envuélvelo en StrictMode para detectar impurezas.',
+    template: `import { {{strict_mode}} } from 'react';
+
+function Greeting({ name }: { name: string }) {
+  return <h1>Hello, {{{interpolation}}}</h1>;
+}
+
+export default function App() {
+  return (
+    <{{strict_mode}}>
+      <{{component}} name="React" />
+    </{{strict_mode}}>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'strict_mode',
+        answers: ['StrictMode'],
+        placeholder: 'modo estricto',
+      },
+      {
+        id: 'interpolation',
+        answers: ['name'],
+        placeholder: 'prop a mostrar',
+      },
+      {
+        id: 'component',
+        answers: ['Greeting'],
+        placeholder: 'nombre del componente',
+      },
+    ],
+    hint: 'Un componente puro siempre retorna el mismo JSX dados los mismos props. StrictMode lo verifica llamándolo dos veces.',
+  },
 };

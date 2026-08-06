@@ -381,4 +381,24 @@ function UserCard({ nombre, rol, avatar }: UserCardProps) {
   difficulty: 'basico',
   estimatedMinutes: 25,
   tags: ['javascript', 'es6', 'const', 'let', 'arrow-functions', 'destructuring', 'spread', 'rest', 'promises', 'modules'],
+  codeChallenge: {
+    instruction: 'Usa destructuring, spread y arrow functions para transformar datos.',
+    template: `{{decl}} users = [{ name: 'Ana', age: 28 }, { name: 'Luis', age: 34 }];
+
+const [{{first}}, ...rest] = users;
+
+const greet = ({{param}}) {{arrow}} \`Hola, \${name}\`;
+
+const updated = users.{{method}}(user => ({{spread}}user, age: user.age + 1 }));`,
+    language: 'js',
+    blanks: [
+      { id: 'decl', answers: ['const'], placeholder: 'declaración' },
+      { id: 'first', answers: ['first', 'firstUser', 'user1'], placeholder: 'variable' },
+      { id: 'param', answers: ['{ name }', 'name'], placeholder: 'parámetro' },
+      { id: 'arrow', answers: ['=>'], placeholder: 'operador' },
+      { id: 'spread', answers: ['{ ...', '...'], placeholder: 'operador' },
+      { id: 'method', answers: ['map'], placeholder: 'método' },
+    ],
+    hint: 'const declara sin reasignación, => define arrow functions, ... expande objetos/arrays, y map transforma cada elemento.',
+  },
 };

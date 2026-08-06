@@ -477,4 +477,49 @@ export default config;`,
     'prerendering',
     'app-router',
   ],
+  codeChallenge: {
+    instruction: 'Completa la página que usa ISR con revalidación, generateStaticParams, y Partial Prerendering con Suspense.',
+    template: `import { {{suspense_import}} } from 'react';
+import { DynamicPrices } from './dynamic-prices';
+
+export const {{revalidate_export}} = 3600;
+
+export async function {{static_params_fn}}() {
+  const products = await getProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+
+  return (
+    <main>
+      <h1>{product.name}</h1>
+      <{{suspense_import}} fallback={<p>Cargando precios...</p>}>
+        <DynamicPrices productId={product.id} />
+      </{{suspense_import}}>
+    </main>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'suspense_import',
+        answers: ['Suspense'],
+        placeholder: 'componente de streaming',
+      },
+      {
+        id: 'revalidate_export',
+        answers: ['revalidate'],
+        placeholder: 'export de revalidación',
+      },
+      {
+        id: 'static_params_fn',
+        answers: ['generateStaticParams'],
+        placeholder: 'función para pre-generar rutas',
+      },
+    ],
+    hint: 'Suspense marca los límites del streaming, revalidate define el intervalo de ISR, y generateStaticParams pre-genera las rutas estáticas.',
+  },
 };

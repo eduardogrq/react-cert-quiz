@@ -306,4 +306,34 @@ function SearchForm() {
   estimatedMinutes: 20,
   prerequisites: ['components', 'state'],
   tags: ['events', 'forms', 'controlled', 'uncontrolled', 'preventDefault', 'FormData'],
+  codeChallenge: {
+    instruction: 'Completa un formulario controlado que previene el envío por defecto y lee el valor del input.',
+    template: `function LoginForm() {
+  const [email, setEmail] = useState('');
+
+  function handleSubmit({{event_param}}) {
+    {{prevent}}.preventDefault();
+    console.log(email);
+  }
+
+  return (
+    <form {{on_submit}}={handleSubmit}>
+      <input
+        value={email}
+        {{on_change}}={(e) => setEmail(e.target.{{value_prop}})}
+      />
+      <button type="submit">Enviar</button>
+    </form>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      { id: 'event_param', answers: ['e', 'event', 'ev'], placeholder: 'evento' },
+      { id: 'prevent', answers: ['e', 'event', 'ev'], placeholder: 'evento' },
+      { id: 'on_submit', answers: ['onSubmit'], placeholder: 'evento form' },
+      { id: 'on_change', answers: ['onChange'], placeholder: 'evento input' },
+      { id: 'value_prop', answers: ['value'], placeholder: 'propiedad' },
+    ],
+    hint: 'En React los eventos se nombran en camelCase (onClick, onSubmit, onChange). preventDefault() cancela el comportamiento por defecto del navegador.',
+  },
 };

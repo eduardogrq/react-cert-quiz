@@ -421,4 +421,47 @@ export function FormConErrores() {
     'authorization',
     'mutations',
   ],
+  codeChallenge: {
+    instruction: 'Completa la Server Action con validación Zod y revalidación tras una mutación exitosa.',
+    template: `{{directive}};
+
+import { {{revalidate_fn}} } from "next/cache";
+import { z } from "zod";
+
+const TareaSchema = z.object({
+  titulo: z.string().min(1).max(100),
+});
+
+export async function crearTarea({{param_name}}: FormData) {
+  const parsed = TareaSchema.safeParse({
+    titulo: {{param_name}}.get("titulo"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors };
+  }
+
+  await db.tareas.create({ data: { titulo: parsed.data.titulo } });
+  {{revalidate_fn}}("/tareas");
+}`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'directive',
+        answers: ['"use server"', "'use server'"],
+        placeholder: 'directiva del servidor',
+      },
+      {
+        id: 'revalidate_fn',
+        answers: ['revalidatePath'],
+        placeholder: 'función de revalidación',
+      },
+      {
+        id: 'param_name',
+        answers: ['formData'],
+        placeholder: 'parámetro del formulario',
+      },
+    ],
+    hint: 'Las Server Actions usan "use server", reciben FormData, y llaman revalidatePath para refrescar la caché tras mutar.',
+  },
 };

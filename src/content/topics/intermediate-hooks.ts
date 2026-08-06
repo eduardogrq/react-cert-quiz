@@ -480,4 +480,47 @@ useEffect(() => {
   estimatedMinutes: 25,
   prerequisites: ['hooks'],
   tags: ['useEffect', 'custom hooks', 'rules of hooks', 'lifecycle', 'stale closure', 'dependencies', 'cleanup'],
+  codeChallenge: {
+    instruction: 'Crea un custom hook que use useEffect con cleanup para suscribirse a un evento del window y desuscribirse al desmontar.',
+    template: `import { {{use_effect}}, useState } from 'react';
+
+function {{hook_name}}() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  {{use_effect}}(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.{{remove}}('resize', handleResize);
+    };
+  }, [{{deps}}]);
+
+  return width;
+}`,
+    language: 'ts',
+    blanks: [
+      {
+        id: 'use_effect',
+        answers: ['useEffect'],
+        placeholder: 'hook de efecto',
+      },
+      {
+        id: 'hook_name',
+        answers: ['useWindowWidth', 'useWidth'],
+        placeholder: 'nombre del custom hook',
+      },
+      {
+        id: 'remove',
+        answers: ['removeEventListener'],
+        placeholder: 'método para desuscribir',
+      },
+      {
+        id: 'deps',
+        answers: [''],
+        placeholder: 'dependencias (vacío si ninguna)',
+      },
+    ],
+    hint: 'Los custom hooks empiezan con "use". La cleanup function se ejecuta al desmontar — ahí debes remover el event listener.',
+  },
 };

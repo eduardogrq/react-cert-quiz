@@ -393,4 +393,24 @@ interface ImportMetaEnv {
   estimatedMinutes: 20,
   prerequisites: ['javascript-es6'],
   tags: ['vite', 'hmr', 'babel', 'jsx-transform', 'react-devtools', 'tooling', 'build-tools'],
+  codeChallenge: {
+    instruction: 'Completa la configuración básica de Vite para un proyecto React.',
+    template: `import { {{define_fn}} } from 'vite';
+import {{plugin}} from '@vitejs/plugin-react';
+
+export default {{define_fn}}({
+  {{plugins_key}}: [{{plugin}}()],
+  server: {
+    {{port_key}}: 3000,
+  },
+});`,
+    language: 'ts',
+    blanks: [
+      { id: 'define_fn', answers: ['defineConfig'], placeholder: 'función' },
+      { id: 'plugin', answers: ['react'], placeholder: 'plugin' },
+      { id: 'plugins_key', answers: ['plugins'], placeholder: 'propiedad' },
+      { id: 'port_key', answers: ['port'], placeholder: 'propiedad' },
+    ],
+    hint: 'Vite usa defineConfig para tipado. El plugin de React se importa de @vitejs/plugin-react y se agrega al array plugins.',
+  },
 };

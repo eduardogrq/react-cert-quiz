@@ -546,4 +546,53 @@ export function PostEditor() {
     'SEO',
     'performance',
   ],
+  codeChallenge: {
+    instruction: 'Completa el componente de imagen optimizada y el lazy loading de un componente pesado.',
+    template: `import {{image_component}} from 'next/image';
+import {{dynamic_fn}} from 'next/dynamic';
+
+const HeavyChart = {{dynamic_fn}}(() => import('@/components/HeavyChart'), {
+  loading: () => <div className="animate-pulse h-64 bg-muted" />,
+  {{ssr_option}}: false,
+});
+
+export function Dashboard() {
+  return (
+    <main>
+      <{{image_component}}
+        src="/hero.jpg"
+        alt="Dashboard"
+        width={1200}
+        height={630}
+        {{priority_prop}}
+      />
+      <HeavyChart />
+    </main>
+  );
+}`,
+    language: 'tsx',
+    blanks: [
+      {
+        id: 'image_component',
+        answers: ['Image'],
+        placeholder: 'componente de imagen',
+      },
+      {
+        id: 'dynamic_fn',
+        answers: ['dynamic'],
+        placeholder: 'función de carga dinámica',
+      },
+      {
+        id: 'ssr_option',
+        answers: ['ssr'],
+        placeholder: 'opción server-side',
+      },
+      {
+        id: 'priority_prop',
+        answers: ['priority'],
+        placeholder: 'prop para carga inmediata',
+      },
+    ],
+    hint: 'Image de next/image, dynamic de next/dynamic con ssr: false para client-only, y priority para imágenes above-the-fold.',
+  },
 };
