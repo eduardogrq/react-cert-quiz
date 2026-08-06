@@ -334,7 +334,7 @@ function Alert({ message, type = 'info', onDismiss }: AlertProps) {
   tags: ['components', 'props', 'children', 'composition', 'export', 'import'],
   codeChallenge: {
     instruction: 'Crea un componente que reciba props y renderice un saludo personalizado.',
-    template: `{{keyword}} Greeting({{ params }}) {
+    template: `{{keyword}} Greeting({{params}}) {
   return <{{tag}}>Hello, {props.{{prop}}}!</{{tag}}>;
 }
 

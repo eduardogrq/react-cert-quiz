@@ -72,7 +72,7 @@ export function CodeChallengeBlock({ challenge }: CodeChallengeBlockProps) {
   // Parse template into segments (text and blanks)
   const segments = useMemo(() => {
     const parts: { type: 'text' | 'blank'; value: string }[] = [];
-    const regex = /\{\{(\w+)\}\}/g;
+    const regex = /\{\{\s*(\w+)\s*\}\}/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 

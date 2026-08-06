@@ -515,7 +515,7 @@ function SearchInput({ onSearch, ...inputProps }: SearchInputProps) {
   disabled{{optional}}: boolean;
 }
 
-function Button({{ props_param }}: {{type_name}}) {
+function Button({{props_param}}: {{type_name}}) {
   return (
     <button onClick={props.onClick} disabled={props.disabled}>
       {props.label}
