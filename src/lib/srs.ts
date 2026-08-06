@@ -7,8 +7,8 @@
 
 export interface SRSCard {
   cardId: string;
-  easeFactor: number; // mínimo 1.3
-  interval: number; // días
+  easeFactor: number; // minimum 1.3
+  interval: number; // days
   repetitions: number;
   nextReview: number; // timestamp ms
   lastRating?: number;
@@ -31,13 +31,13 @@ export function createNewSRSCard(cardId: string): SRSCard {
 export function reviewCard(card: SRSCard, rating: SRSRating): SRSCard {
   const now = Date.now();
 
-  // "Otra vez" — reset
+  // "Again" — reset
   if (rating === 0) {
     return {
       ...card,
       repetitions: 0,
       interval: 0,
-      nextReview: now, // mostrar de nuevo inmediatamente
+      nextReview: now, // show again immediately
       lastRating: rating,
     };
   }
@@ -46,23 +46,23 @@ export function reviewCard(card: SRSCard, rating: SRSRating): SRSCard {
   const newRepetitions = card.repetitions + 1;
 
   if (card.repetitions === 0) {
-    // Primera revisión correcta
+    // First correct review
     newInterval = 1;
   } else if (card.repetitions === 1) {
     newInterval = 3;
   } else {
-    // Multiplicar por ease factor
+    // Multiply by ease factor
     newInterval = Math.round(card.interval * card.easeFactor);
   }
 
-  // Ajustar ease factor según rating
+  // Adjust ease factor based on rating
   let newEaseFactor = card.easeFactor;
   if (rating === 1) {
-    // Difícil: reducir ease, intervalo más corto
+    // Hard: reduce ease, shorter interval
     newEaseFactor = Math.max(MIN_EASE_FACTOR, card.easeFactor - 0.15);
     newInterval = Math.max(1, Math.round(newInterval * 0.7));
   } else if (rating === 3) {
-    // Fácil: aumentar ease, intervalo más largo
+    // Easy: increase ease, longer interval
     newEaseFactor = card.easeFactor + 0.15;
     newInterval = Math.round(newInterval * 1.3);
   }

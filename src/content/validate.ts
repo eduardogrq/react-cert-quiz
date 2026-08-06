@@ -43,10 +43,10 @@ export function validateTopics(topics: Topic[]): ValidationError[] {
       });
     }
 
-    // Validar que la analogía se retome en explanation
+    // Validate that the analogy is referenced in the explanation
     const analogyTitle = topic.realWorldAnalogy.title.toLowerCase();
     const explanationLower = topic.explanation.toLowerCase();
-    // Buscar al menos una referencia a la analogía en la explicación
+    // Look for at least one reference to the analogy in the explanation
     const analogyWords = analogyTitle.split(' ').filter((w) => w.length > 3);
     const hasAnalogyInExplanation = analogyWords.some((word) =>
       explanationLower.includes(word.toLowerCase())
@@ -59,7 +59,7 @@ export function validateTopics(topics: Topic[]): ValidationError[] {
       });
     }
 
-    // Al menos 1 flashcard usa analogía
+    // At least 1 flashcard uses the analogy
     const hasAnalogyFlashcard = topic.flashcards.some((f) => f.usesAnalogy);
     if (!hasAnalogyFlashcard) {
       errors.push({
@@ -69,7 +69,7 @@ export function validateTopics(topics: Topic[]): ValidationError[] {
       });
     }
 
-    // Al menos 1 quiz usa analogía
+    // At least 1 quiz question uses the analogy
     const hasAnalogyQuiz = topic.quiz.some((q) => q.usesAnalogy);
     if (!hasAnalogyQuiz) {
       errors.push({

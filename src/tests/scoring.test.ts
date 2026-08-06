@@ -38,8 +38,8 @@ describe('Scoring', () => {
       correctAnswers: 5,
       byTopic: {
         state: { total: 5, correct: 4 }, // 80% — ok
-        hooks: { total: 3, correct: 1 }, // 33% — débil
-        jsx: { total: 2, correct: 0 }, // 0% — débil
+        hooks: { total: 3, correct: 1 }, // 33% — weak
+        jsx: { total: 2, correct: 0 }, // 0% — weak
       },
     };
     const weak = getWeakTopics(result);
