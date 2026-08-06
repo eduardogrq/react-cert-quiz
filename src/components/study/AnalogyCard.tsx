@@ -87,7 +87,7 @@ export function AnalogyCard({
                         {es.analogy.inRealLife}
                       </TableHead>
                       <TableHead className="w-1/2 text-sm uppercase tracking-wide font-semibold">
-                        {es.analogy.inTech.replace('React/JS', topicTitle)}
+                        {es.analogy.inTech}
                       </TableHead>
                     </TableRow>
                   </TableHeader>

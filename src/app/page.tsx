@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { topics } from '@/content/index';
+import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
 
 export default function HomePage() {
@@ -17,7 +18,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="text-center space-y-5 pt-10 pb-6">
         <Badge variant="secondary" className="text-sm font-medium px-4 py-1.5">
-          Junior React Developer
+          {course.badge}
         </Badge>
         <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-gradient">
           {es.dashboard.welcome}

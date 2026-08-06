@@ -9,11 +9,10 @@ import { Progress } from '@/components/ui/progress';
 import { ExamTimer } from '@/components/quiz/ExamTimer';
 import { QuizResults } from '@/components/quiz/QuizResults';
 import { seededShuffle } from '@/lib/shuffle';
+import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
 import type { Topic, QuizQuestion } from '@/content/types';
 import type { QuizResultData } from '@/components/quiz/QuizEngine';
-
-// first change
 interface ExamClientProps {
   topics: Topic[];
 }
@@ -25,15 +24,12 @@ interface ExamQuestion extends QuizQuestion {
 
 type ExamState = 'setup' | 'active' | 'results';
 
-const DEFAULT_QUESTION_COUNT = 40;
-const DEFAULT_DURATION_MINUTES = 90;
-const DEFAULT_CUTOFF = 70;
 
 export function ExamClient({ topics }: ExamClientProps) {
   const [state, setState] = useState<ExamState>('setup');
-  const [questionCount, setQuestionCount] = useState(DEFAULT_QUESTION_COUNT);
-  const [durationMinutes, setDurationMinutes] = useState(DEFAULT_DURATION_MINUTES);
-  const [cutoff, setCutoff] = useState(DEFAULT_CUTOFF);
+  const [questionCount, setQuestionCount] = useState(course.exam.defaultQuestions);
+  const [durationMinutes, setDurationMinutes] = useState(course.exam.defaultDurationMinutes);
+  const [cutoff, setCutoff] = useState(course.exam.defaultCutoff);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flagged, setFlagged] = useState<Set<string>>(new Set());

@@ -4,9 +4,10 @@ import { useState, useCallback } from 'react';
 import { Download, Upload, Trash2, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
 
-const STORAGE_PREFIX = 'rcq_v1_';
+const STORAGE_PREFIX = course.storagePrefix;
 
 function getAllProgressData(): Record<string, unknown> {
   const data: Record<string, unknown> = {};

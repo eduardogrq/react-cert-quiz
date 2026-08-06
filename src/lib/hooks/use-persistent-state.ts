@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod/v4';
+import { course } from '@/config/course';
 
-const STORAGE_PREFIX = 'rcq_v1_';
+const STORAGE_PREFIX = course.storagePrefix;
 
 /**
  * Hook para persistir estado en localStorage con validación Zod.

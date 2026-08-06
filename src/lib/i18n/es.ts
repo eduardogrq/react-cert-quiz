@@ -1,7 +1,9 @@
+import { course } from '@/config/course';
+
 export const es = {
   // General
-  appName: 'React Cert Quiz',
-  appDescription: 'Repaso para certificación Junior React Developer',
+  appName: course.name,
+  appDescription: course.description,
 
   // Navigation
   nav: {
@@ -33,7 +35,7 @@ export const es = {
   // Analogy Card
   analogy: {
     inRealLife: 'En la vida real',
-    inTech: 'En React/JS',
+    inTech: course.techLabel,
     whereItBreaks: 'Ojo: donde la analogía no aplica',
     remindMe: 'Recordarme la analogía',
   },
