@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground text-base">
+      <body className="min-h-full flex flex-col bg-background text-foreground text-base overflow-x-hidden">
         <ThemeProvider>
           <AppHeader />
           <CommandPalette />
