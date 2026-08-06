@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, CheckCircle2, Circle, Clock, AlertTriangle, BookOpen, Zap, FileCode } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -32,6 +33,14 @@ export function TopicView({ topic, isReviewed = false, onMarkReviewed }: TopicVi
       <div className="sticky top-16 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 -mx-4 px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
+            <Link
+              href="/temas"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Temas</span>
+            </Link>
+            <span className="text-border">|</span>
             <Badge variant="secondary" className="font-medium text-sm">
               {es.difficulty[topic.difficulty]}
             </Badge>
