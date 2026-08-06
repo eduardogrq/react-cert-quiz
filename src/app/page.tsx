@@ -1,11 +1,14 @@
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Brain, Trophy, Clock, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Trophy, Clock, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { topics } from '@/content/index';
 import { course } from '@/config/course';
 import { es } from '@/lib/i18n/es';
+import { PageTransition } from '@/components/layout/PageTransition';
+import { AnimatedList, AnimatedItem } from '@/components/layout/AnimatedList';
+import { HomeCards } from '@/components/home/HomeCards';
 
 export default function HomePage() {
   const totalTopics = topics.length;
@@ -14,7 +17,7 @@ export default function HomePage() {
   const totalMinutes = topics.reduce((sum, t) => sum + t.estimatedMinutes, 0);
 
   return (
-    <div className="space-y-8 sm:space-y-12">
+    <PageTransition className="space-y-8 sm:space-y-12">
       {/* Hero */}
       <section className="text-center space-y-4 sm:space-y-5 pt-6 sm:pt-10 pb-4 sm:pb-6">
         <Badge variant="secondary" className="text-sm font-medium px-4 py-1.5">
@@ -33,43 +36,11 @@ export default function HomePage() {
       </section>
 
       {/* Stats grid */}
-      <section className="grid grid-cols-3 gap-3 sm:gap-5">
-        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-              </div>
-              <span className="text-2xl sm:text-4xl font-bold">{totalTopics}</span>
-            </div>
-            <p className="text-xs sm:text-base text-muted-foreground mt-2 sm:mt-3 text-center sm:text-left">Temas con analogías</p>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-chart-2/10 flex items-center justify-center group-hover:bg-chart-2/15 transition-colors">
-                <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-chart-2" />
-              </div>
-              <span className="text-2xl sm:text-4xl font-bold">{totalFlashcards}</span>
-            </div>
-            <p className="text-xs sm:text-base text-muted-foreground mt-2 sm:mt-3 text-center sm:text-left">Flashcards con SRS</p>
-          </CardContent>
-        </Card>
-
-        <Card className="group hover:glow-sm transition-shadow duration-300 border-border/60">
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-chart-3/10 flex items-center justify-center group-hover:bg-chart-3/15 transition-colors">
-                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-chart-3" />
-              </div>
-              <span className="text-2xl sm:text-4xl font-bold">{totalQuiz}</span>
-            </div>
-            <p className="text-xs sm:text-base text-muted-foreground mt-2 sm:mt-3 text-center sm:text-left">Preguntas de quiz</p>
-          </CardContent>
-        </Card>
-      </section>
+      <HomeCards
+        totalTopics={totalTopics}
+        totalFlashcards={totalFlashcards}
+        totalQuiz={totalQuiz}
+      />
 
       {/* Recommended action */}
       <section className="space-y-4">
@@ -103,28 +74,30 @@ export default function HomePage() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Todos los temas
         </h2>
-        <div className="grid gap-2">
+        <AnimatedList className="grid gap-2">
           {topics.map((topic, idx) => (
-            <Link key={topic.id} href={`/temas/${topic.id}`}>
-              <div className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-accent/50 transition-colors">
-                <span className="text-xs sm:text-sm font-mono text-muted-foreground w-5 sm:w-6 text-right shrink-0">
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm sm:text-base font-medium truncate group-hover:text-primary transition-colors">
-                    {topic.title}
-                  </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                    {topic.realWorldAnalogy.title}
-                  </p>
+            <AnimatedItem key={topic.id}>
+              <Link href={`/temas/${topic.id}`}>
+                <div className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-accent/50 transition-colors">
+                  <span className="text-xs sm:text-sm font-mono text-muted-foreground w-5 sm:w-6 text-right shrink-0">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm sm:text-base font-medium truncate group-hover:text-primary transition-colors">
+                      {topic.title}
+                    </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                      {topic.realWorldAnalogy.title}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0">
+                    {es.difficulty[topic.difficulty]}
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0">
-                  {es.difficulty[topic.difficulty]}
-                </Badge>
-              </div>
-            </Link>
+              </Link>
+            </AnimatedItem>
           ))}
-        </div>
+        </AnimatedList>
       </section>
 
       {/* CTA */}
@@ -142,6 +115,6 @@ export default function HomePage() {
           </Button>
         </Link>
       </section>
-    </div>
+    </PageTransition>
   );
 }

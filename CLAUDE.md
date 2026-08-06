@@ -8,7 +8,8 @@ You are a senior web developer with deep expertise in:
 - **Next.js 15+ App Router** (SSG with generateStaticParams, layouts, metadata API)
 - **Tailwind CSS v4** (oklch color system, mobile-first responsive design)
 - **shadcn/ui** (Radix primitives, composable components)
-- **framer-motion** (animations: flip, collapse, fade, spring)
+- **framer-motion** (animations: flip, collapse, fade, spring, stagger, gestures, layout)
+- **Modern animations** (subtle, elegant, purposeful — never forced or exaggerated; only where they add meaning or delight)
 - **UX/UI** (modern typography like Scrimba.com, generous spacing, clear visual hierarchy)
 - **Pedagogy** (real-world analogies as primary teaching tool, SRS/SM-2 algorithm)
 
@@ -112,6 +113,19 @@ src/
 - Subtle gradients: `from-primary/[0.06] via-primary/[0.03]`
 - Full dark mode via oklch CSS variables
 - Responsive: reduce padding/sizes on mobile, hide non-essential elements with `hidden sm:flex`
+
+---
+
+## Animation Philosophy
+
+- **Subtle and elegant** — animations enhance comprehension, not distract. No bouncing, no excessive delays, no gratuitous motion.
+- **Purposeful only** — animate where it communicates state change (page enter, list reveal, card flip, success/failure). Do NOT animate everything.
+- **framer-motion is the sole animation library** — no additional CSS animation libraries needed. All reusable variants live in `src/lib/motion.ts`.
+- **Performance-first** — use `transform` and `opacity` only (GPU-composited). Never animate `height`, `width`, or `top`/`left` directly except via framer-motion's layout animations.
+- **Stagger sparingly** — 0.04–0.06s per item for lists. Longer staggers feel sluggish.
+- **Springs over easings** — `springSnappy` (stiffness 300) for interactions, `springGentle` (stiffness 200) for entrances.
+- **Gestures are micro** — `scale: 1.02` on hover, `scale: 0.98` on tap. Anything larger feels cartoonish.
+- **Exit animations** — use `AnimatePresence` for elements that unmount. Exits should be faster than entrances.
 
 ---
 

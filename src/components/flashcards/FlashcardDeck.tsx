@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { RotateCcw } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RotateCcw, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { es } from '@/lib/i18n/es';
 import { useSRSState } from '@/lib/hooks/use-srs-state';
+import { springSnappy, springGentle } from '@/lib/motion';
 import type { Flashcard } from '@/content/types';
 import type { SRSRating } from '@/lib/srs';
 
@@ -29,6 +30,7 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
+  const [direction, setDirection] = useState(1);
 
   // Derive session cards from props + SRS state (no effect needed)
   const sessionCards = useMemo(() => {
@@ -55,6 +57,7 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
       if (currentIndex + 1 >= sessionCards.length) {
         setSessionComplete(true);
       } else {
+        setDirection(1);
         setCurrentIndex((prev) => prev + 1);
         setFlipped(false);
       }
@@ -66,6 +69,7 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
     setCurrentIndex(0);
     setFlipped(false);
     setSessionComplete(false);
+    setDirection(1);
   }, []);
 
   // Keyboard shortcuts
@@ -91,7 +95,19 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
 
   if (sessionComplete) {
     return (
-      <div className="flex flex-col items-center justify-center gap-5 py-16">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={springGentle}
+        className="flex flex-col items-center justify-center gap-5 py-16"
+      >
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ ...springSnappy, delay: 0.1 }}
+        >
+          <PartyPopper className="h-12 w-12 text-primary" />
+        </motion.div>
         <p className="text-2xl font-semibold">{es.flashcards.completed}</p>
         <p className="text-lg text-muted-foreground">
           {sessionCards.length} tarjetas revisadas
@@ -100,7 +116,7 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
           <RotateCcw className="h-5 w-5" />
           Repetir sesión
         </Button>
-      </div>
+      </motion.div>
     );
   }
 
@@ -137,55 +153,75 @@ export function FlashcardDeck({ cards, topicTitle }: FlashcardDeckProps) {
           if (e.code === 'Enter') handleFlip();
         }}
       >
-        <motion.div
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-          style={{ transformStyle: 'preserve-3d' }}
-          className="relative h-64 sm:h-72"
-        >
-          {/* Front */}
-          <Card className="absolute inset-0 backface-hidden flex items-center justify-center border-border/60 shadow-lg bg-gradient-to-br from-card to-muted/30">
-            <CardContent className="p-10 text-center space-y-4">
-              <p className="text-xl font-semibold leading-relaxed">{currentCard.front}</p>
-              <p className="text-sm text-muted-foreground/70">
-                Space para voltear
-              </p>
-            </CardContent>
-          </Card>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={currentCard.id}
+            initial={{ opacity: 0, x: direction * 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction * -40 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <motion.div
+              animate={{ rotateY: flipped ? 180 : 0 }}
+              transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+              style={{ transformStyle: 'preserve-3d' }}
+              className="relative h-64 sm:h-72"
+            >
+              {/* Front */}
+              <Card className="absolute inset-0 backface-hidden flex items-center justify-center border-border/60 shadow-lg bg-gradient-to-br from-card to-muted/30">
+                <CardContent className="p-10 text-center space-y-4">
+                  <p className="text-xl font-semibold leading-relaxed">{currentCard.front}</p>
+                  <p className="text-sm text-muted-foreground/70">
+                    Space para voltear
+                  </p>
+                </CardContent>
+              </Card>
 
-          {/* Back */}
-          <Card className="absolute inset-0 backface-hidden flex items-center justify-center [transform:rotateY(180deg)] border-primary/20 shadow-lg bg-gradient-to-br from-card to-primary/[0.04]">
-            <CardContent className="p-10 text-center">
-              <p className="text-base text-muted-foreground leading-[1.8]">
-                {currentCard.back}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
+              {/* Back */}
+              <Card className="absolute inset-0 backface-hidden flex items-center justify-center [transform:rotateY(180deg)] border-primary/20 shadow-lg bg-gradient-to-br from-card to-primary/[0.04]">
+                <CardContent className="p-10 text-center">
+                  <p className="text-base text-muted-foreground leading-[1.8]">
+                    {currentCard.back}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Rating buttons - only visible when flipped */}
-      {flipped && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center gap-2"
-          aria-live="polite"
-        >
-          {ratingButtons.map(({ rating, label, variant, key }) => (
-            <Button
-              key={rating}
-              variant={variant}
-              size="sm"
-              onClick={() => handleRate(rating)}
-              className="min-w-[80px]"
-            >
-              <span className="text-xs opacity-60 mr-1">{key}</span>
-              {label}
-            </Button>
-          ))}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {flipped && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className="flex justify-center gap-2"
+            aria-live="polite"
+          >
+            {ratingButtons.map(({ rating, label, variant, key }, idx) => (
+              <motion.div
+                key={rating}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.04 }}
+              >
+                <Button
+                  variant={variant}
+                  size="sm"
+                  onClick={() => handleRate(rating)}
+                  className="min-w-[80px]"
+                >
+                  <span className="text-xs opacity-60 mr-1">{key}</span>
+                  {label}
+                </Button>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Help text */}
       <p className="text-center text-sm text-muted-foreground">

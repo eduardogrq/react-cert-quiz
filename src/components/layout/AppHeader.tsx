@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun, BookOpen, Menu, X, Search } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { es } from '@/lib/i18n/es';
+import { springSnappy } from '@/lib/motion';
 
 const navItems = [
   { href: '/', label: es.nav.home },
@@ -60,7 +62,6 @@ export function AppHeader() {
             size="icon"
             className="hidden sm:flex text-muted-foreground hover:text-foreground"
             onClick={() => {
-              // Trigger Cmd+K
               window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
             }}
             aria-label="Buscar (Cmd+K)"
@@ -75,11 +76,22 @@ export function AppHeader() {
             className="text-muted-foreground hover:text-foreground"
             aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
           >
-            {theme === 'dark' ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={theme}
+                initial={{ scale: 0.8, opacity: 0, rotate: -90 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ scale: 0.8, opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+                className="block"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </motion.span>
+            </AnimatePresence>
           </Button>
 
           {/* Mobile menu toggle */}
@@ -91,33 +103,60 @@ export function AppHeader() {
             aria-label="Menú"
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={mobileOpen ? 'close' : 'open'}
+                initial={{ scale: 0.8, opacity: 0, rotate: -90 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ scale: 0.8, opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.15 }}
+                className="block"
+              >
+                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </motion.span>
+            </AnimatePresence>
           </Button>
         </div>
       </div>
 
       {/* Mobile nav */}
-      {mobileOpen && (
-        <nav className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
-                  isActive
-                    ? 'text-primary font-medium bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="md:hidden overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-xl"
+          >
+            <div className="px-4 py-3 space-y-1">
+              {navItems.map((item, idx) => {
+                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                return (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04, ...springSnappy }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                        isActive
+                          ? 'text-primary font-medium bg-primary/10'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
