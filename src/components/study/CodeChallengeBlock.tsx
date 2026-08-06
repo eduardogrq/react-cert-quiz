@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, RotateCcw, Lightbulb, Play, Terminal } from 'lucide-react';
+import { Check, X, RotateCcw, Lightbulb, Play, Terminal, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { springSnappy } from '@/lib/motion';
 import type { CodeChallenge } from '@/content/types';
@@ -51,6 +51,12 @@ export function CodeChallengeBlock({ challenge }: CodeChallengeBlockProps) {
     setStatuses(Object.fromEntries(challenge.blanks.map((b) => [b.id, 'idle'])));
     setSubmitted(false);
     setShowHint(false);
+  }, [challenge.blanks]);
+
+  const handleReveal = useCallback(() => {
+    setAnswers(Object.fromEntries(challenge.blanks.map((b) => [b.id, b.answers[0]])));
+    setStatuses(Object.fromEntries(challenge.blanks.map((b) => [b.id, 'correct'])));
+    setSubmitted(true);
   }, [challenge.blanks]);
 
   const handleKeyDown = useCallback(
@@ -221,6 +227,15 @@ export function CodeChallengeBlock({ challenge }: CodeChallengeBlockProps) {
                 Pista
               </Button>
             )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReveal}
+              className="gap-1.5 text-muted-foreground"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Ver solución
+            </Button>
           </>
         ) : (
           <>

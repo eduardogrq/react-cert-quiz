@@ -160,6 +160,7 @@ src/
   - `instruction` and `hint` in Spanish; `template` code in English with `{{blank_id}}` markers
   - 2–5 blanks per challenge, each with 1–3 accepted answers (case-insensitive)
   - Must test the topic's central concept, not a tangential detail
+  - The first answer in `answers[]` is used as the revealed solution — make it the most canonical/standard form
 - Every `QuizQuestion` has `explanation` + `whyOthersAreWrong` per distractor
 - Every `KeyTerm` has `analogyHint` (≤15 words, everyday language)
 - Test `validateTopics()` fails if analogy is missing or mapping < 2
