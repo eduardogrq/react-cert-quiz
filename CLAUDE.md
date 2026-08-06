@@ -156,6 +156,10 @@ src/
 ## Content Model
 
 - `realWorldAnalogy` is REQUIRED (not optional)
+- `codeChallenge` is REQUIRED for every topic — fill-in-the-blank exercise testing the core concept
+  - `instruction` and `hint` in Spanish; `template` code in English with `{{blank_id}}` markers
+  - 2–5 blanks per challenge, each with 1–3 accepted answers (case-insensitive)
+  - Must test the topic's central concept, not a tangential detail
 - Every `QuizQuestion` has `explanation` + `whyOthersAreWrong` per distractor
 - Every `KeyTerm` has `analogyHint` (≤15 words, everyday language)
 - Test `validateTopics()` fails if analogy is missing or mapping < 2
@@ -167,6 +171,7 @@ src/
 - `pnpm dev/build/lint/test` with zero errors and zero warnings
 - Zero `any`, zero TS errors
 - All topics with valid `realWorldAnalogy`
+- All topics with a `codeChallenge` (2–5 blanks, tests core concept)
 - Each topic reuses analogy in explanation, ≥1 flashcard, ≥1 quiz
 - Works with empty localStorage and corrupt data
 - 100% keyboard navigable
