@@ -13,6 +13,7 @@ import { es } from '@/lib/i18n/es';
 import type { Topic, QuizQuestion } from '@/content/types';
 import type { QuizResultData } from '@/components/quiz/QuizEngine';
 
+// first change
 interface ExamClientProps {
   topics: Topic[];
 }
